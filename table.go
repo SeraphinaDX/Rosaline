@@ -292,6 +292,11 @@ func (t *TableWidget) activateSelection() {
 
 func (t *TableWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	t.ctx = ctx
+	ctx.addCleanup(func() {
+		t.tree = nil
+		t.itemIDs = nil
+		t.ctx = nil
+	})
 	frame := parent.Frame(
 		tk.Background(ctx.theme.Background.String()),
 		tk.Borderwidth(0),

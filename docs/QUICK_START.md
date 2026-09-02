@@ -160,5 +160,8 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
   filesystem application with [FILE_BROWSER.md](FILE_BROWSER.md).
 - Display nested data with [TREES.md](TREES.md), including selection,
   activation, expansion, and lazy loading.
+- Add reusable tool and child windows with
+  [MULTIPLE_WINDOWS.md](MULTIPLE_WINDOWS.md), then run
+  `go run ./examples/windows`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

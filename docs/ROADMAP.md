@@ -56,7 +56,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Tabs
 - [x] Tables
 - [x] Trees
-- [ ] Multiple windows
+- [x] Multiple windows
 - [ ] Custom widgets
 - [ ] Accessibility groundwork
 - [ ] HiDPI and multi-monitor test suite

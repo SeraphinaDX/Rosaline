@@ -118,6 +118,13 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 	c.tkImage = tk.NewPhoto(tk.Width(c.width), tk.Height(c.height))
 	widget.CreateImage(0, 0, tk.Image(c.tkImage), tk.Anchor("nw"))
 	c.Redraw()
+	ctx.addCleanup(func() {
+		if c.tkImage != nil {
+			c.tkImage.Delete()
+		}
+		c.tkImage = nil
+		c.widget = nil
+	})
 
 	dispatch := func(handler func(MouseEvent), event MouseEvent) {
 		if handler == nil {

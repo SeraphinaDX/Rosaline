@@ -173,3 +173,26 @@ func TestRestartCancelsCurrentWait(t *testing.T) {
 		t.Fatalf("scheduled %d waits, want 2", schedules)
 	}
 }
+
+func TestUnmountCancelsScheduledTimer(t *testing.T) {
+	originalSchedule := scheduleTimer
+	originalCancel := cancelTimer
+	t.Cleanup(func() {
+		scheduleTimer = originalSchedule
+		cancelTimer = originalCancel
+	})
+
+	cancelled := ""
+	scheduleTimer = func(_ time.Duration, _ ...any) string { return "window-timer" }
+	cancelTimer = func(id string) { cancelled = id }
+
+	ctx := &mountContext{}
+	timer := Every(time.Second, func() {})
+	timer.mount(ctx)
+	timer.begin()
+	timer.unmount(ctx)
+
+	if cancelled != "window-timer" || timer.ctx != nil || timer.afterID != "" {
+		t.Fatalf("unmount = cancelled %q, ctx %p, after %q", cancelled, timer.ctx, timer.afterID)
+	}
+}

@@ -1,6 +1,7 @@
 # Menus
 
-Rosaline applications can attach native menu bars to `App`.
+Rosaline applications can attach native menu bars to `App` and to secondary
+windows created with `NewWindow`.
 
 ## Complete example
 
@@ -58,10 +59,30 @@ item := rosaline.MenuItem("Save", save).Shortcut("Ctrl+S")
 
 This avoids two versions of the same application logic.
 
+## Secondary-window menus
+
+Pass a menu bar through `WindowOptions` just as you would through `App`:
+
+```go
+editor := rosaline.NewWindow(rosaline.WindowOptions{
+	Title: "Editor",
+	Menu: rosaline.MenuBar(
+		rosaline.Menu("File",
+			rosaline.MenuItem("Save", save).Shortcut("Ctrl+S"),
+		),
+	),
+	Content: editorContent,
+})
+```
+
+The menu and its shortcuts belong to that secondary window. See
+[MULTIPLE_WINDOWS.md](MULTIPLE_WINDOWS.md) for its complete lifecycle.
+
 ## Closing the application
 
-`rosaline.Quit` safely closes the main window and event loop. It can be used as
-a menu callback without wrapping it in another function.
+`rosaline.Quit` safely closes the main window, every secondary window, and the
+event loop. A secondary window's Close item should call that window's `Close`
+method when the rest of the application should remain open.
 
 ## Go concepts used here
 

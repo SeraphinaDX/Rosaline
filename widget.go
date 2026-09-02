@@ -24,8 +24,11 @@ type focusableWidget struct {
 
 type mountContext struct {
 	theme          Theme
+	session        *applicationSession
+	owner          *Window
 	flushes        []func()
 	refreshes      []func()
+	cleanups       []func()
 	focusables     []focusableWidget
 	focusCondition func() bool
 	initialFocus   *tk.Window
@@ -54,9 +57,49 @@ func (c *mountContext) refresh() {
 	if c.closed {
 		return
 	}
+	if c.session != nil {
+		c.session.refreshAll()
+		return
+	}
+	c.refreshLocal()
+}
+
+func (c *mountContext) refreshLocal() {
+	if c == nil || c.closed {
+		return
+	}
 	for _, refresh := range c.refreshes {
 		refresh()
 	}
+}
+
+func (c *mountContext) addCleanup(cleanup func()) {
+	if c != nil && cleanup != nil {
+		c.cleanups = append(c.cleanups, cleanup)
+	}
+}
+
+func (c *mountContext) release() {
+	if c == nil || c.closed {
+		return
+	}
+	c.flush()
+	for index := len(c.cleanups) - 1; index >= 0; index-- {
+		c.cleanups[index]()
+	}
+	c.abandon()
+}
+
+func (c *mountContext) abandon() {
+	if c == nil {
+		return
+	}
+	c.closed = true
+	c.flushes = nil
+	c.refreshes = nil
+	c.cleanups = nil
+	c.focusables = nil
+	c.initialFocus = nil
 }
 
 func (c *mountContext) addFocusable(window *tk.Window, initial bool) {

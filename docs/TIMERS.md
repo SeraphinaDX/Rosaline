@@ -110,6 +110,10 @@ rosaline.RunApp(rosaline.App{
 
 This ownership is what keeps timer lifetime predictable.
 
+Secondary windows can own timers through `WindowOptions.Timers`. Those timers
+attach when the window opens and detach when it closes. See
+[MULTIPLE_WINDOWS.md](MULTIPLE_WINDOWS.md) for window lifecycle details.
+
 ### Sleeping in a callback
 
 Do not use `time.Sleep` in a button or timer callback. Sleeping blocks the GUI

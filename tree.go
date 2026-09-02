@@ -449,6 +449,12 @@ func (t *TreeWidget) notifyExpansion(node *TreeNode, expanded bool) {
 
 func (t *TreeWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	t.ctx = ctx
+	ctx.addCleanup(func() {
+		t.tree = nil
+		t.nodeItems = nil
+		t.itemNodes = nil
+		t.ctx = nil
+	})
 	frame := parent.Frame(
 		tk.Background(ctx.theme.Background.String()),
 		tk.Borderwidth(0),

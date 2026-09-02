@@ -95,6 +95,22 @@ replacement, and restores a safe parent selection when a selected branch is
 removed. `SetChildren` lets applications lazy-load large trees without a
 framework-specific model or background filesystem scan.
 
+## Window lifecycle
+
+One private application session owns the primary event loop and every open
+secondary window. Each window receives its own mount context for controls,
+focus traversal, menu shortcuts, and timers. A secondary window can therefore
+close and remount without leaving native controls or scheduled callbacks
+attached to its previous instance.
+
+The session coordinates shared refreshes after callbacks, so a normal Go
+variable changed in one window can update `LabelFunc` and other dynamic widgets
+in every open window. Parent pointers remain ordinary Rosaline `Window`
+handles; the backend mapping and native transient relationships stay private.
+Closing a parent walks its registered descendants before destroying the
+parent, while application quit closes the entire session through the same
+lifecycle path.
+
 ## Canvas input and redraw
 
 Canvas mouse callbacks receive Rosaline's own `MouseEvent`; backend event types

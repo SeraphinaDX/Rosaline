@@ -19,8 +19,9 @@ var (
 	cancelTimer   = tk.TclAfterCancel
 )
 
-// Timer runs a callback later or at a regular interval while its App is open.
-// Create timers with Every, After, or Animate, then include them in App.Timers.
+// Timer runs a callback later or at a regular interval while its window is
+// open. Create timers with Every, After, or Animate, then include them in
+// App.Timers or WindowOptions.Timers.
 type Timer struct {
 	interval   time.Duration
 	callback   func()
@@ -139,8 +140,7 @@ func (t *Timer) unmount(ctx *mountContext) {
 	if t.ctx != ctx {
 		return
 	}
-	t.generation++
-	t.afterID = ""
+	t.cancelScheduled()
 	t.ctx = nil
 }
 

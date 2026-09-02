@@ -199,6 +199,10 @@ func (l *ListWidget) activateSelection() {
 
 func (l *ListWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	l.ctx = ctx
+	ctx.addCleanup(func() {
+		l.listbox = nil
+		l.ctx = nil
+	})
 	frame := parent.Frame(
 		tk.Background(ctx.theme.Background.String()),
 		tk.Borderwidth(0),

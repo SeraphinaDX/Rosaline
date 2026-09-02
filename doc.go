@@ -24,4 +24,6 @@
 // scrolling, keyboard behavior, selection, and activation.
 // Trees display nested nodes with native expansion, selection, activation,
 // dynamic child replacement, and optional application-defined values.
+// NewWindow creates reusable secondary windows with independent content,
+// menus, focus, themes, timers, and safe parent-child lifecycles.
 package rosaline

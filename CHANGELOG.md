@@ -2,6 +2,20 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.9.0
+
+- Add reusable secondary windows with `NewWindow` and `WindowOptions`.
+- Add safe `Show`, `Close`, `Focus`, `SetTitle`, and `IsOpen` controls.
+- Focus an existing open window rather than creating accidental duplicates.
+- Add explicit main-window, parent, and child relationships with cascading
+  closure and automatic parent opening.
+- Give each window independent content, menus, shortcuts, themes, focus order,
+  and timers while refreshing shared Go state across every open window.
+- Safely detach window-owned controls and timers during close and allow the
+  same window handle to reopen later.
+- Add non-visual window lifecycle and cross-window refresh tests.
+- Add a complete Multiple Windows guide and Project Desk application.
+
 ## 0.8.0
 
 - Add native trees built from simple `Node` values and child pointers.

@@ -127,6 +127,12 @@ func (t *TabsWidget) notifyChange() {
 func (t *TabsWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	t.ctx = ctx
 	t.notebook = parent.TNotebook(takeFocusOption(true))
+	t.pageWindows = nil
+	ctx.addCleanup(func() {
+		t.notebook = nil
+		t.pageWindows = nil
+		t.ctx = nil
+	})
 	ctx.addFocusable(t.notebook.Window, false)
 
 	for pageIndex, page := range t.pages {

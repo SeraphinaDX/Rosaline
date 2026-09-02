@@ -152,5 +152,12 @@ func (i *ImageWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget 
 		tk.Borderwidth(0),
 	)
 	i.apply()
+	ctx.addCleanup(func() {
+		if i.tkImage != nil {
+			i.tkImage.Delete()
+		}
+		i.tkImage = nil
+		i.label = nil
+	})
 	return mountedWidget{window: i.label.Window, expandX: i.expand, expandY: i.expand}
 }

@@ -55,3 +55,21 @@ func TestFocusConditionTracksChangingVisibility(t *testing.T) {
 		t.Fatal("widget should become visible when its condition changes")
 	}
 }
+
+func TestMountContextReleasesControlsInReverseOrder(t *testing.T) {
+	ctx := mountContext{}
+	var order []string
+	ctx.flushes = append(ctx.flushes, func() { order = append(order, "flush") })
+	ctx.addCleanup(func() { order = append(order, "first") })
+	ctx.addCleanup(func() { order = append(order, "second") })
+
+	ctx.release()
+	ctx.release()
+	got := fmt.Sprint(order)
+	if got != "[flush second first]" {
+		t.Fatalf("release order = %s, want [flush second first]", got)
+	}
+	if !ctx.closed || ctx.flushes != nil || ctx.refreshes != nil || ctx.cleanups != nil {
+		t.Fatal("released context retained active callbacks")
+	}
+}

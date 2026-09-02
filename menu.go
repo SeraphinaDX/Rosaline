@@ -22,7 +22,7 @@ type AppMenu struct {
 
 // MenuEntry is an item or separator accepted by Menu.
 type MenuEntry interface {
-	add(*mountContext, *tk.MenuWidget)
+	add(*mountContext, *tk.MenuWidget, *tk.Window)
 }
 
 // MenuAction is a clickable command inside a menu.
@@ -76,19 +76,19 @@ func MenuSeparator() MenuEntry {
 	return menuSeparator{}
 }
 
-func (m *AppMenuBar) mount(ctx *mountContext) {
-	menuBar := tk.Menu(tk.Tearoff(false))
+func (m *AppMenuBar) mount(ctx *mountContext, window *tk.Window) {
+	menuBar := window.Menu(tk.Tearoff(false))
 	for _, appMenu := range m.menus {
 		dropdown := menuBar.Menu(tk.Tearoff(false))
 		for _, entry := range appMenu.entries {
-			entry.add(ctx, dropdown)
+			entry.add(ctx, dropdown, window)
 		}
 		menuBar.AddCascade(tk.Lbl(appMenu.text), tk.Mnu(dropdown))
 	}
-	tk.App.Configure(tk.Mnu(menuBar))
+	window.Configure(tk.Mnu(menuBar))
 }
 
-func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget) {
+func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget, window *tk.Window) {
 	invoke := func() {
 		ctx.flush()
 		m.onClick()
@@ -101,14 +101,14 @@ func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget) {
 	menu.AddCommand(options...)
 
 	if sequence, ok := shortcutSequence(m.shortcut); ok {
-		tk.Bind(tk.App, sequence, tk.Command(func(event *tk.Event) {
+		tk.Bind(window, sequence, tk.Command(func(event *tk.Event) {
 			invoke()
 			event.SetReturnCodeBreak()
 		}))
 	}
 }
 
-func (menuSeparator) add(_ *mountContext, menu *tk.MenuWidget) {
+func (menuSeparator) add(_ *mountContext, menu *tk.MenuWidget, _ *tk.Window) {
 	menu.AddSeparator()
 }
 

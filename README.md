@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.8.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.9.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -243,7 +243,31 @@ navigation, and both scrollbars are built in. See
 [docs/TREES.md](docs/TREES.md) and the upgraded
 [File Browser application](docs/FILE_BROWSER.md).
 
-## Included in v0.8.0
+## Multiple windows without another event loop
+
+Secondary windows are reusable Go handles:
+
+```go
+var about *rosaline.Window
+about = rosaline.NewWindow(rosaline.WindowOptions{
+	Title:  "About",
+	Parent: rosaline.MainWindow(),
+	Content: rosaline.Button("Close", func() {
+		about.Close()
+	}),
+})
+
+openAbout := rosaline.Button("About", func() {
+	about.Show()
+})
+```
+
+Calling `Show` twice focuses the existing window. Windows can close and reopen,
+share normal Go state, own menus and timers, and form safe parent-child
+relationships. See [docs/MULTIPLE_WINDOWS.md](docs/MULTIPLE_WINDOWS.md) and the
+complete [Project Desk example](examples/windows/main.go).
+
+## Included in v0.9.0
 
 - Application windows
 - Labels and dynamic labels
@@ -278,14 +302,24 @@ navigation, and both scrollbars are built in. See
 - Native trees with nested nodes, labels, and application-defined values
 - Tree selection, activation, expansion callbacks, dynamic roots and children,
   and two-axis scrolling
+- Reusable secondary windows with simple show, close, focus, title, and state
+  controls
+- Window-specific content, menus, shortcuts, themes, focus traversal, and
+  timers
+- Parent-child window lifecycles, automatic parent opening, cascading closure,
+  and duplicate prevention
+- Automatic dynamic-widget refresh across every open window
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
 - A complete Preferences application combining tabs, lists, form controls, and
   a live canvas preview
 - A complete File Browser using lazy folder trees, tables, and Go's standard
   filesystem APIs
+- A complete Project Desk application combining an editor, live child preview,
+  About window, shared state, menus, and dynamic titles
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
-  animation examples, plus the Preferences and File Browser applications
+  animation examples, plus the Preferences, File Browser, and Project Desk
+  applications
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -303,12 +337,13 @@ CGO_ENABLED=0 go run ./examples/imageviewer
 CGO_ENABLED=0 go run ./examples/animation
 CGO_ENABLED=0 go run ./examples/preferences
 CGO_ENABLED=0 go run ./examples/filebrowser
+CGO_ENABLED=0 go run ./examples/windows
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add multiple windows,
-radio buttons, general keyboard events, accessibility groundwork, and deeper
+The API is experimental until v1.0. The next milestones add radio buttons,
+general keyboard events, accessibility groundwork, custom widgets, and deeper
 Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
