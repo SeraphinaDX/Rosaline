@@ -145,6 +145,10 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 
 ## Next steps
 
+- Build a form with [TEXT_INPUT.md](TEXT_INPUT.md) and
+  [CHECKBOX.md](CHECKBOX.md).
+- Run `go run ./examples/forms` to see input, validation, and submission used
+  together.
 - Run `go run ./examples/canvas` from the Rosaline source tree.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

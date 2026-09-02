@@ -64,5 +64,10 @@ func RunApp(app App) {
 	tk.Pack(append([]tk.Opt{root.window}, options...)...)
 
 	ctx.refresh()
-	tk.App.Center().Wait()
+	ctx.installFocusTraversal()
+	tk.App.Center()
+	if ctx.initialFocus != nil {
+		tk.Focus(ctx.initialFocus)
+	}
+	tk.App.Wait()
 }

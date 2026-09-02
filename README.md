@@ -4,8 +4,8 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently an early `v0.1.0` foundation. The public API is small on
-purpose and will grow through well-documented, tested features.
+Rosaline is currently at `v0.2.0`. The public API is small on purpose and grows
+through well-documented, tested features.
 
 ## Goals
 
@@ -25,7 +25,7 @@ Rosaline uses GitHub's normal Go module support:
 go get github.com/SeraphinaDX/Rosaline
 ```
 
-Rosaline requires Go 1.24 or newer. No C compiler or separately installed GUI
+Rosaline requires Go 1.25 or newer. No C compiler or separately installed GUI
 toolkit is required. On Linux, a graphical desktop with X11 or XWayland is
 currently required; native Wayland support is on the roadmap.
 
@@ -56,16 +56,43 @@ CGO_ENABLED=0 go run .
 
 See [docs/QUICK_START.md](docs/QUICK_START.md) for a guided first application.
 
-## Included in v0.1.0
+## A small form
+
+Form controls update normal Go variables through pointers:
+
+```go
+var name string
+var subscribed bool
+
+rosaline.Run(
+	rosaline.Column(
+		rosaline.Label("Your name"),
+		rosaline.TextBox(&name).Placeholder("Type your name").Focus(),
+		rosaline.CheckBox("Send me updates", &subscribed),
+		rosaline.Button("Continue", func() {
+			rosaline.Message("Hello", "Welcome, "+name+"!")
+		}).Primary(),
+	),
+)
+```
+
+See [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md),
+[docs/CHECKBOX.md](docs/CHECKBOX.md), and [docs/FORMS.md](docs/FORMS.md).
+
+## Included in v0.2.0
 
 - Application windows
 - Labels and dynamic labels
 - Buttons and message dialogs
 - Rows, columns, spacing, padding, and expansion
 - Simple state values
+- Single-line and multiline text input
+- Password display, placeholders, change events, and Enter submission
+- Checkboxes bound to Go Boolean variables
+- Tab and Shift+Tab keyboard navigation
 - A first-class canvas with lines, rectangles, circles, and text
 - Semantic colors and themes
-- Runnable hello, counter, and canvas examples
+- Runnable hello, counter, canvas, and forms examples
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -76,12 +103,13 @@ From the extracted project root:
 CGO_ENABLED=0 go run ./examples/hello
 CGO_ENABLED=0 go run ./examples/counter
 CGO_ENABLED=0 go run ./examples/canvas
+CGO_ENABLED=0 go run ./examples/forms
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add text input,
-checkboxes, images, keyboard and mouse events, canvas redraw/input, scrolling,
+The API is experimental until v1.0. The next milestones add radio buttons,
+general keyboard and mouse events, canvas redraw/input, images, scrolling,
 menus, and file dialogs.
 
 Rosaline's backend is intentionally private. Application code only imports the

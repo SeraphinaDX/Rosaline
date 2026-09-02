@@ -37,6 +37,7 @@ func (b *ButtonWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 	button := parent.Button(
 		tk.Txt(b.text),
 		tk.Command(func() {
+			ctx.flush()
 			b.onClick()
 			ctx.refresh()
 		}),
@@ -48,6 +49,8 @@ func (b *ButtonWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		tk.Pady(7),
 		tk.Relief("flat"),
 		tk.Borderwidth(0),
+		tk.Takefocus(true),
 	)
+	ctx.addFocusable(button.Window, false)
 	return mountedWidget{window: button.Window}
 }

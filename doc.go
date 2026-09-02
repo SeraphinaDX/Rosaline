@@ -9,4 +9,5 @@
 //	rosaline.Run(rosaline.Label("Hello, world!"))
 //
 // Use RunApp when you want to set the title, initial window size, or theme.
+// TextBox, TextArea, and CheckBox bind directly to ordinary Go variables.
 package rosaline

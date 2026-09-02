@@ -15,12 +15,13 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 ## v0.2 — Forms and input
 
-- [ ] TextBox and TextArea
-- [ ] CheckBox and RadioButton
+- [x] TextBox and TextArea
+- [x] CheckBox
+- [ ] RadioButton
 - [ ] Keyboard events and shortcuts
 - [ ] Mouse events for Canvas
-- [ ] Focus and tab navigation
-- [ ] Validation and beginner-friendly errors
+- [x] Focus and tab navigation
+- [x] Basic validation patterns and beginner-friendly form documentation
 
 ## v0.3 — Real application building
 

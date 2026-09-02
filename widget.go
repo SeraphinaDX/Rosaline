@@ -18,12 +18,58 @@ type mountedWidget struct {
 }
 
 type mountContext struct {
-	theme     Theme
-	refreshes []func()
+	theme        Theme
+	flushes      []func()
+	refreshes    []func()
+	focusables   []*tk.Window
+	initialFocus *tk.Window
+}
+
+func (c *mountContext) flush() {
+	for _, flush := range c.flushes {
+		flush()
+	}
 }
 
 func (c *mountContext) refresh() {
 	for _, refresh := range c.refreshes {
 		refresh()
+	}
+}
+
+func (c *mountContext) addFocusable(window *tk.Window, initial bool) {
+	c.focusables = append(c.focusables, window)
+	if initial && c.initialFocus == nil {
+		c.initialFocus = window
+	}
+}
+
+func (c *mountContext) installFocusTraversal() {
+	if len(c.focusables) < 2 {
+		return
+	}
+
+	for i, window := range c.focusables {
+		next := c.focusables[(i+1)%len(c.focusables)]
+		previous := c.focusables[(i-1+len(c.focusables))%len(c.focusables)]
+
+		forward := tk.Command(func(event *tk.Event) {
+			c.flush()
+			tk.Focus(next)
+			event.SetReturnCodeBreak()
+		})
+		backward := tk.Command(func(event *tk.Event) {
+			c.flush()
+			tk.Focus(previous)
+			event.SetReturnCodeBreak()
+		})
+
+		tk.Bind(window, "<Tab>", forward)
+		tk.Bind(window, "<Shift-Key-Tab>", backward)
+		tk.Bind(window, "<ISO_Left_Tab>", tk.Command(func(event *tk.Event) {
+			c.flush()
+			tk.Focus(previous)
+			event.SetReturnCodeBreak()
+		}))
 	}
 }
