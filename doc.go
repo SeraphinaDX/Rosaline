@@ -14,4 +14,6 @@
 // platform event types.
 // Images, scroll areas, menus, and file dialogs provide the groundwork for
 // complete desktop applications while ordinary file I/O remains normal Go.
+// App-owned timers support delayed work, repeating updates, and canvas
+// animation without exposing the private event loop.
 package rosaline

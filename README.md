@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.4.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.4.1`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -127,7 +127,30 @@ openImage := func() {
 
 See [docs/IMAGE_VIEWER.md](docs/IMAGE_VIEWER.md) for the complete application.
 
-## Included in v0.4.0
+## Timers and animation
+
+Timers belong to the application and automatically stop with its event loop:
+
+```go
+seconds := 0
+
+clock := rosaline.Every(time.Second, func() {
+	seconds++
+})
+
+rosaline.RunApp(rosaline.App{
+	Timers: []*rosaline.Timer{clock},
+	Content: rosaline.LabelFunc(func() string {
+		return fmt.Sprintf("Running for %d seconds", seconds)
+	}),
+})
+```
+
+Use `After` for one delayed callback and `Animate` for a frame-rate-based
+canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
+[docs/ANIMATION.md](docs/ANIMATION.md).
+
+## Included in v0.4.1
 
 - Application windows
 - Labels and dynamic labels
@@ -145,8 +168,12 @@ See [docs/IMAGE_VIEWER.md](docs/IMAGE_VIEWER.md) for the complete application.
 - Horizontal and vertical scroll areas
 - Native open, save, message, error, and confirmation dialogs
 - Menu bars with working keyboard shortcuts
+- Repeating and one-shot application timers
+- Start, stop, restart, and running-state timer controls
+- Frame-rate-based canvas animation
 - Semantic colors and themes
-- Runnable hello, counter, canvas, forms, paint, and image-viewer examples
+- Runnable hello, counter, canvas, forms, paint, image-viewer, and animation
+  examples
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -160,12 +187,14 @@ CGO_ENABLED=0 go run ./examples/canvas
 CGO_ENABLED=0 go run ./examples/forms
 CGO_ENABLED=0 go run ./examples/paint
 CGO_ENABLED=0 go run ./examples/imageviewer
+CGO_ENABLED=0 go run ./examples/animation
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add timers, radio
-buttons, general keyboard events, image export, and more drawing operations.
+The API is experimental until v1.0. The next milestones add paths, Bézier
+curves, transforms, clipping, image export, radio buttons, and general keyboard
+events.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

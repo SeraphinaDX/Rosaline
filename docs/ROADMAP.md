@@ -39,7 +39,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Open and save dialogs
 - [x] Confirmation and error dialogs
 - [x] Complete image-viewer application
-- [ ] Timers and animation
+- [x] Timers and animation
 
 ## v0.5 — Drawing applications
 

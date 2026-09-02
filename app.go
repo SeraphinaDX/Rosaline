@@ -16,6 +16,7 @@ type App struct {
 	Padding int
 	Theme   Theme
 	Menu    *AppMenuBar
+	Timers  []*Timer
 	Content Widget
 }
 
@@ -52,7 +53,14 @@ func RunApp(app App) {
 
 	ctx := &mountContext{theme: app.Theme}
 	activeContext = ctx
-	defer func() { activeContext = nil }()
+	mountedTimers := mountTimers(ctx, app.Timers)
+	defer func() {
+		ctx.closed = true
+		for _, timer := range mountedTimers {
+			timer.unmount(ctx)
+		}
+		activeContext = nil
+	}()
 	tk.App.WmTitle(app.Title)
 	tk.WmGeometry(tk.App, fmt.Sprintf("%dx%d", app.Width, app.Height))
 	tk.App.Configure(tk.Background(app.Theme.Background.String()))
@@ -76,6 +84,9 @@ func RunApp(app App) {
 	tk.App.Center()
 	if ctx.initialFocus != nil {
 		tk.Focus(ctx.initialFocus)
+	}
+	for _, timer := range mountedTimers {
+		timer.begin()
 	}
 	tk.App.Wait()
 }

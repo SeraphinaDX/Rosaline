@@ -2,6 +2,15 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.4.1
+
+- Add app-owned repeating timers with `Every`.
+- Add one-shot delayed callbacks with `After`.
+- Add frame-rate-based canvas animation timers with `Animate`.
+- Add `Start`, `Stop`, `Restart`, and `Running` timer controls.
+- Refresh dynamic widgets automatically after timer callbacks.
+- Add a polished animation example and complete timer and animation guides.
+
 ## 0.4.0
 
 - Add pure-Go image loading for PNG, JPEG, GIF, BMP, TIFF, and WebP.
