@@ -10,6 +10,7 @@ import (
 	_ "image/png"
 	"os"
 
+	_ "github.com/gen2brain/avif"
 	_ "golang.org/x/image/bmp"
 	_ "golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
@@ -29,7 +30,7 @@ func NewPicture(pixels image.Image) *Picture {
 }
 
 // LoadImage reads and decodes an image file.
-// PNG, JPEG, GIF, BMP, TIFF, and WebP are supported.
+// PNG, JPEG, GIF, BMP, TIFF, WebP, and AVIF are supported.
 func LoadImage(path string) (*Picture, error) {
 	file, err := os.Open(path)
 	if err != nil {

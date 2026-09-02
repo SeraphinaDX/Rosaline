@@ -3,74 +3,8 @@
 package rosaline
 
 import (
-	"fmt"
-
 	tk "modernc.org/tk9.0"
 )
-
-// TextStyle controls text drawn on a Canvas.
-type TextStyle struct {
-	Color Color
-	Size  int
-}
-
-// DrawingCanvas provides Rosaline's beginner-friendly 2D drawing operations.
-type DrawingCanvas struct {
-	widget     *tk.CanvasWidget
-	background Color
-}
-
-// Clear removes existing shapes and changes the canvas background.
-func (c *DrawingCanvas) Clear(color Color) {
-	c.background = color
-	c.widget.Delete("all")
-	c.widget.Configure(tk.Background(color.String()))
-}
-
-// FillRect draws a filled rectangle.
-func (c *DrawingCanvas) FillRect(x, y, width, height float64, color Color) {
-	c.widget.CreateRectangle(x, y, x+width, y+height,
-		tk.Fill(color.String()), tk.Outline(color.String()))
-}
-
-// Rect draws the outline of a rectangle.
-func (c *DrawingCanvas) Rect(x, y, width, height, stroke float64, color Color) {
-	c.widget.CreateRectangle(x, y, x+width, y+height,
-		tk.Fill(""), tk.Outline(color.String()), tk.Width(stroke))
-}
-
-// Line draws a line.
-func (c *DrawingCanvas) Line(x1, y1, x2, y2, stroke float64, color Color) {
-	c.widget.CreateLine(x1, y1, x2, y2, tk.Fill(color.String()), tk.Width(stroke))
-}
-
-// FillCircle draws a filled circle.
-func (c *DrawingCanvas) FillCircle(x, y, radius float64, color Color) {
-	c.widget.CreateOval(x-radius, y-radius, x+radius, y+radius,
-		tk.Fill(color.String()), tk.Outline(color.String()))
-}
-
-// Circle draws the outline of a circle.
-func (c *DrawingCanvas) Circle(x, y, radius, stroke float64, color Color) {
-	c.widget.CreateOval(x-radius, y-radius, x+radius, y+radius,
-		tk.Fill(""), tk.Outline(color.String()), tk.Width(stroke))
-}
-
-// Text draws text from its top-left corner.
-func (c *DrawingCanvas) Text(text string, x, y float64, style TextStyle) {
-	if style.Color.A == 0 {
-		style.Color = Black
-	}
-	if style.Size <= 0 {
-		style.Size = 14
-	}
-	c.widget.CreateText(x, y,
-		tk.Txt(text),
-		tk.Fill(style.Color.String()),
-		tk.Anchor("nw"),
-		tk.Font(fmt.Sprintf("TkDefaultFont %d", style.Size)),
-	)
-}
 
 // CanvasWidget is a custom 2D drawing surface.
 type CanvasWidget struct {
@@ -82,7 +16,8 @@ type CanvasWidget struct {
 	onMouseDown func(MouseEvent)
 	onMouseMove func(MouseEvent)
 	onMouseUp   func(MouseEvent)
-	drawing     *DrawingCanvas
+	widget      *tk.CanvasWidget
+	tkImage     *tk.Img
 	redrawCount uint64
 }
 
@@ -145,16 +80,30 @@ func (c *CanvasWidget) OnMouseUp(handler func(MouseEvent)) *CanvasWidget {
 // from Rosaline callbacks after changing drawing state. Mouse callbacks redraw
 // automatically, so they normally do not need to call it themselves.
 func (c *CanvasWidget) Redraw() {
-	if c.drawing == nil {
+	if c.widget == nil || c.tkImage == nil {
 		return
 	}
-
-	c.drawing.widget.Delete("all")
-	c.drawing.widget.Configure(tk.Background(c.background.String()))
-	c.drawing.background = c.background
-	c.draw(c.drawing)
-	c.background = c.drawing.background
+	pixels, background := renderDrawing(c.width, c.height, c.background, c.draw)
+	c.background = background
+	c.widget.Configure(tk.Background(background.String()))
+	if err := c.tkImage.Put(pixels); err != nil {
+		oldImage := c.tkImage
+		c.widget.Delete("all")
+		c.tkImage = tk.NewPhoto(tk.Data(pixels))
+		c.widget.CreateImage(0, 0, tk.Image(c.tkImage), tk.Anchor("nw"))
+		oldImage.Delete()
+	}
 	c.redrawCount++
+}
+
+// Picture renders the canvas into an off-screen Picture. The result can be
+// saved as PNG or AVIF and is available even before the widget is mounted.
+func (c *CanvasWidget) Picture() *Picture {
+	if c == nil {
+		return nil
+	}
+	pixels, _ := renderDrawing(c.width, c.height, c.background, c.draw)
+	return NewPicture(pixels)
 }
 
 func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
@@ -165,7 +114,9 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		tk.Highlightthickness(0),
 		tk.Borderwidth(0),
 	)
-	c.drawing = &DrawingCanvas{widget: widget, background: c.background}
+	c.widget = widget
+	c.tkImage = tk.NewPhoto(tk.Width(c.width), tk.Height(c.height))
+	widget.CreateImage(0, 0, tk.Image(c.tkImage), tk.Anchor("nw"))
 	c.Redraw()
 
 	dispatch := func(handler func(MouseEvent), event MouseEvent) {

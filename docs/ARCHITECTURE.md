@@ -6,7 +6,8 @@ Rosaline's architecture exists to keep complexity out of beginner programs.
 Application code
     -> Rosaline widgets and layout
     -> Rosaline drawing API
-    -> private platform backend
+    -> pure-Go software renderer
+    -> private window backend or image encoder
     -> Linux, Windows, or macOS
 ```
 
@@ -22,6 +23,16 @@ their lifetime and layout. Canvas drawing is direct: an application receives a
 `DrawingCanvas` and issues drawing operations in order.
 
 This combination supports both ordinary utilities and drawing-heavy programs.
+
+## One drawing engine
+
+Visible canvas widgets and off-screen pictures share one pure-Go software
+renderer. Paths, transforms, clipping, text, and primitive shapes therefore
+produce the same pixels in a window, a PNG, and an AVIF export.
+
+The window backend receives a finished pixel image rather than exposing its own
+drawing objects. This clean boundary also means a future GPU display path can
+be added without changing `DrawingCanvas` or exported artwork.
 
 ## Backend boundary
 
@@ -72,9 +83,13 @@ pure-Go format packages before handing pixels to the private backend. Invalid
 or missing files therefore return normal Go errors with useful filenames rather
 than failing inside the event loop.
 
-File dialogs choose paths only. Applications continue to read and write data
-with normal Go packages such as `os` and `io`, keeping file formats and
-application policy outside the GUI layer.
+File dialogs choose paths only. Applications continue to read and write their
+own documents with normal Go packages such as `os` and `io`. Rosaline only owns
+the image formats directly produced by its renderer: PNG and CGo-free AVIF.
+
+`Render` creates a `Picture` without a window. `CanvasWidget.Picture` runs the
+same drawing callback at the widget's configured size. Both routes feed the
+same image encoders used by `Picture.SavePNG` and `Picture.SaveAVIF`.
 
 ## Menus and application callbacks
 

@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.4.1`. The public API is small on purpose and grows
+Rosaline is currently at `v0.5.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -28,6 +28,9 @@ go get github.com/SeraphinaDX/Rosaline
 Rosaline requires Go 1.25 or newer. No C compiler or separately installed GUI
 toolkit is required. On Linux, a graphical desktop with X11 or XWayland is
 currently required; native Wayland support is on the roadmap.
+
+The first build can take a while because the CGo-free window and AVIF backends
+must be compiled. Go caches them, so later builds are normally much faster.
 
 ## Hello, Rosaline
 
@@ -102,6 +105,36 @@ Rosaline redraws automatically after mouse callbacks. See
 [docs/CANVAS_INPUT.md](docs/CANVAS_INPUT.md) for clicking, dragging, modifier
 keys, manual redraws, and a complete paint program.
 
+## Advanced drawing and image export
+
+Paths can be reused, transformed, clipped, filled, and outlined:
+
+```go
+heart := rosaline.NewPath().
+	MoveTo(160, 80).
+	CubicTo(80, 20, 30, 130, 160, 240).
+	CubicTo(290, 130, 240, 20, 160, 80).
+	Close()
+
+canvas := rosaline.Canvas(func(c *rosaline.DrawingCanvas) {
+	c.Clear(rosaline.White)
+	c.FillPath(heart, rosaline.SoftRose)
+	c.StrokePath(heart, 4, rosaline.Rose)
+})
+```
+
+The same drawing engine produces off-screen images:
+
+```go
+picture := canvas.Picture()
+err := picture.SavePNG("heart.png")
+err = picture.SaveAVIF("heart.avif")
+```
+
+See [docs/DRAWING_PATHS.md](docs/DRAWING_PATHS.md),
+[docs/TRANSFORMS_AND_CLIPPING.md](docs/TRANSFORMS_AND_CLIPPING.md), and
+[docs/IMAGE_EXPORT.md](docs/IMAGE_EXPORT.md).
+
 ## A real image-viewer application
 
 Rosaline v0.4 combines menus, dialogs, images, and scrolling:
@@ -150,7 +183,7 @@ Use `After` for one delayed callback and `Animate` for a frame-rate-based
 canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 [docs/ANIMATION.md](docs/ANIMATION.md).
 
-## Included in v0.4.1
+## Included in v0.5.0
 
 - Application windows
 - Labels and dynamic labels
@@ -162,9 +195,13 @@ canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 - Checkboxes bound to Go Boolean variables
 - Tab and Shift+Tab keyboard navigation
 - A first-class canvas with lines, rectangles, circles, and text
+- Reusable paths with straight, quadratic, and cubic Bézier sections
+- Translate, rotate, scale, Push/Pop, and transformed clipping
 - Canvas clicks, pointer movement, dragging, and button-release events
 - Automatic and manually requested canvas redraws
-- Pure-Go loading and display of common image formats
+- CGo-free loading and display of PNG, JPEG, GIF, BMP, TIFF, WebP, and AVIF
+- Off-screen drawing with the same API as visible canvases
+- PNG and CGo-free AVIF image export
 - Horizontal and vertical scroll areas
 - Native open, save, message, error, and confirmation dialogs
 - Menu bars with working keyboard shortcuts
@@ -172,8 +209,9 @@ canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 - Start, stop, restart, and running-state timer controls
 - Frame-rate-based canvas animation
 - Semantic colors and themes
-- Runnable hello, counter, canvas, forms, paint, image-viewer, and animation
-  examples
+- A saveable Paint application with menus, shortcuts, and PNG/AVIF output
+- Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
+  animation examples
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -184,6 +222,7 @@ From the extracted project root:
 CGO_ENABLED=0 go run ./examples/hello
 CGO_ENABLED=0 go run ./examples/counter
 CGO_ENABLED=0 go run ./examples/canvas
+CGO_ENABLED=0 go run ./examples/drawing
 CGO_ENABLED=0 go run ./examples/forms
 CGO_ENABLED=0 go run ./examples/paint
 CGO_ENABLED=0 go run ./examples/imageviewer
@@ -192,9 +231,9 @@ CGO_ENABLED=0 go run ./examples/animation
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add paths, Bézier
-curves, transforms, clipping, image export, radio buttons, and general keyboard
-events.
+The API is experimental until v1.0. The next milestones add lists, tables,
+tabs, trees, multiple windows, radio buttons, general keyboard events,
+accessibility groundwork, and deeper Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to
@@ -210,5 +249,8 @@ LGPL. Modifications to Rosaline itself must remain available under the LGPL,
 and distribution must follow the license's relinking and source-availability
 requirements. The incorporated GNU GPL v3 text is included in
 [LICENSE.GPL](LICENSE.GPL).
+
+Dependencies keep their own licenses; see
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Copyright (C) 2026 Britney Lozza and Rosaline contributors.

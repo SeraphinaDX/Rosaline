@@ -16,4 +16,6 @@
 // complete desktop applications while ordinary file I/O remains normal Go.
 // App-owned timers support delayed work, repeating updates, and canvas
 // animation without exposing the private event loop.
+// Paths, transforms, clipping, off-screen rendering, and PNG or AVIF export
+// support complete graphical applications with one consistent drawing API.
 package rosaline

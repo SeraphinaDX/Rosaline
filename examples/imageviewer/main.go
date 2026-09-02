@@ -16,7 +16,7 @@ func main() {
 	currentPath := ""
 
 	imageFilters := []rosaline.FileFilter{
-		{Name: "Images", Extensions: []string{"png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp"}},
+		{Name: "Images", Extensions: []string{"png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp", "avif"}},
 		{Name: "All files", Extensions: []string{"*"}},
 	}
 
@@ -92,7 +92,7 @@ func main() {
 			),
 			rosaline.Menu("Help",
 				rosaline.MenuItem("About", func() {
-					rosaline.Message("About", "Image Viewer built with Rosaline v0.4.0")
+					rosaline.Message("About", "Image Viewer built with Rosaline v0.5.0")
 				}),
 			),
 		),

@@ -43,12 +43,12 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 ## v0.5 — Drawing applications
 
-- [ ] Paths and Bézier curves
-- [ ] Transforms: translate, rotate, and scale
-- [ ] Clipping
+- [x] Paths and Bézier curves
+- [x] Transforms: translate, rotate, and scale
+- [x] Clipping
 - [x] Basic canvas redraw/invalidation
-- [ ] Off-screen images
-- [ ] Image export
+- [x] Off-screen images
+- [x] PNG and AVIF image export
 
 ## v0.6 — Larger interfaces
 
@@ -63,9 +63,9 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 Each longer tutorial will explain why the program is structured as it is:
 
-1. Calculator
-2. Notepad
-3. Image viewer
-4. Paint program
-5. File browser
-6. Small canvas game
+- [ ] Calculator
+- [ ] Notepad
+- [x] Image viewer
+- [x] Paint program
+- [ ] File browser
+- [ ] Small canvas game

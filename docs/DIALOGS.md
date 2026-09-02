@@ -32,7 +32,7 @@ The result is true only when the user chooses Yes.
 path, ok := rosaline.OpenFileDialog(rosaline.FileDialogOptions{
 	Title: "Open Image",
 	Filters: []rosaline.FileFilter{
-		{Name: "Images", Extensions: []string{"png", "jpg", "webp"}},
+		{Name: "Images", Extensions: []string{"png", "jpg", "webp", "avif"}},
 		{Name: "All files", Extensions: []string{"*"}},
 	},
 })

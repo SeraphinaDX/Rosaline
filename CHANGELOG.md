@@ -2,6 +2,21 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.5.0
+
+- Add reusable paths with lines, quadratic curves, cubic Bézier curves, and
+  closed shapes.
+- Add path filling and stroking.
+- Add translate, rotate, scale, reset, and nested push/pop transforms.
+- Add transformed rectangular clipping with push/pop restoration.
+- Use one pure-Go renderer for visible canvases and off-screen pictures.
+- Add `Render` and `CanvasWidget.Picture` for off-screen drawing.
+- Add PNG and CGo-free AVIF export with quality, speed, and lossless options.
+- Add AVIF loading and display to the existing image API and image viewer.
+- Upgrade Paint with menus, shortcuts, unsaved-work protection, and PNG/AVIF
+  saving.
+- Add an advanced drawing example and complete feature and application guides.
+
 ## 0.4.1
 
 - Add app-owned repeating timers with `Every`.

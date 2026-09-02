@@ -1,7 +1,7 @@
 # Images
 
 Rosaline loads common image files with pure Go and displays them with the
-`Image` widget. PNG, JPEG, GIF, BMP, TIFF, and WebP are supported.
+`Image` widget. PNG, JPEG, GIF, BMP, TIFF, WebP, and AVIF are supported.
 
 ## Complete example
 
@@ -77,6 +77,18 @@ widget := rosaline.Image(picture)
 
 This makes Rosaline compatible with standard-library drawing code and other
 pure-Go image packages.
+
+## Saving pictures
+
+Pictures can be written as PNG or AVIF:
+
+```go
+err := picture.SavePNG("rose.png")
+err = picture.SaveAVIF("rose.avif")
+```
+
+See [IMAGE_EXPORT.md](IMAGE_EXPORT.md) for off-screen drawing, AVIF quality
+options, save dialogs, and complete programs.
 
 ## Large images
 
