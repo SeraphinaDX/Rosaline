@@ -150,5 +150,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 - Run `go run ./examples/forms` to see input, validation, and submission used
   together.
 - Run `go run ./examples/canvas` from the Rosaline source tree.
+- Make the canvas interactive with [CANVAS_INPUT.md](CANVAS_INPUT.md), then run
+  `go run ./examples/paint`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

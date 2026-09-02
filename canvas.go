@@ -74,11 +74,16 @@ func (c *DrawingCanvas) Text(text string, x, y float64, style TextStyle) {
 
 // CanvasWidget is a custom 2D drawing surface.
 type CanvasWidget struct {
-	draw       func(*DrawingCanvas)
-	width      int
-	height     int
-	background Color
-	expand     bool
+	draw        func(*DrawingCanvas)
+	width       int
+	height      int
+	background  Color
+	expand      bool
+	onMouseDown func(MouseEvent)
+	onMouseMove func(MouseEvent)
+	onMouseUp   func(MouseEvent)
+	drawing     *DrawingCanvas
+	redrawCount uint64
 }
 
 // Canvas creates a 2D drawing surface.
@@ -117,6 +122,41 @@ func (c *CanvasWidget) Expand() *CanvasWidget {
 	return c
 }
 
+// OnMouseDown runs when a mouse button is pressed over the canvas.
+func (c *CanvasWidget) OnMouseDown(handler func(MouseEvent)) *CanvasWidget {
+	c.onMouseDown = handler
+	return c
+}
+
+// OnMouseMove runs when the pointer moves over the canvas. Event Button is
+// MouseNone for normal movement and identifies the held button while dragging.
+func (c *CanvasWidget) OnMouseMove(handler func(MouseEvent)) *CanvasWidget {
+	c.onMouseMove = handler
+	return c
+}
+
+// OnMouseUp runs when a mouse button is released over the canvas.
+func (c *CanvasWidget) OnMouseUp(handler func(MouseEvent)) *CanvasWidget {
+	c.onMouseUp = handler
+	return c
+}
+
+// Redraw clears the canvas and runs its drawing function again. Call Redraw
+// from Rosaline callbacks after changing drawing state. Mouse callbacks redraw
+// automatically, so they normally do not need to call it themselves.
+func (c *CanvasWidget) Redraw() {
+	if c.drawing == nil {
+		return
+	}
+
+	c.drawing.widget.Delete("all")
+	c.drawing.widget.Configure(tk.Background(c.background.String()))
+	c.drawing.background = c.background
+	c.draw(c.drawing)
+	c.background = c.drawing.background
+	c.redrawCount++
+}
+
 func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	widget := parent.Canvas(
 		tk.Width(c.width),
@@ -125,7 +165,59 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		tk.Highlightthickness(0),
 		tk.Borderwidth(0),
 	)
-	drawing := &DrawingCanvas{widget: widget, background: c.background}
-	c.draw(drawing)
+	c.drawing = &DrawingCanvas{widget: widget, background: c.background}
+	c.Redraw()
+
+	dispatch := func(handler func(MouseEvent), event MouseEvent) {
+		if handler == nil {
+			return
+		}
+		before := c.redrawCount
+		handler(event)
+		if c.redrawCount == before {
+			c.Redraw()
+		}
+		ctx.refresh()
+	}
+
+	if c.onMouseDown != nil {
+		for _, binding := range []struct {
+			sequence string
+			button   MouseButton
+		}{
+			{"<Button-1>", MouseLeft},
+			{"<Button-2>", MouseMiddle},
+			{"<Button-3>", MouseRight},
+		} {
+			button := binding.button
+			tk.Bind(widget.Window, binding.sequence, tk.Command(func(event *tk.Event) {
+				dispatch(c.onMouseDown, mouseEvent(event, button, true))
+			}))
+		}
+	}
+
+	if c.onMouseMove != nil {
+		tk.Bind(widget.Window, "<Motion>", tk.Command(func(event *tk.Event) {
+			button := heldMouseButton(event.State)
+			dispatch(c.onMouseMove, mouseEvent(event, button, button != MouseNone))
+		}))
+	}
+
+	if c.onMouseUp != nil {
+		for _, binding := range []struct {
+			sequence string
+			button   MouseButton
+		}{
+			{"<ButtonRelease-1>", MouseLeft},
+			{"<ButtonRelease-2>", MouseMiddle},
+			{"<ButtonRelease-3>", MouseRight},
+		} {
+			button := binding.button
+			tk.Bind(widget.Window, binding.sequence, tk.Command(func(event *tk.Event) {
+				dispatch(c.onMouseUp, mouseEvent(event, button, false))
+			}))
+		}
+	}
+
 	return mountedWidget{window: widget.Window, expandX: c.expand, expandY: c.expand}
 }

@@ -2,6 +2,17 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.3.0
+
+- Add backend-neutral `MouseEvent` and `MouseButton` types.
+- Add canvas mouse-down, mouse-move, and mouse-up callbacks.
+- Report canvas coordinates, dragging state, mouse button, and Shift, Control,
+  and Alt modifiers.
+- Redraw canvases automatically after mouse callbacks.
+- Add public `CanvasWidget.Redraw` for drawing-state changes from buttons and
+  other Rosaline callbacks.
+- Add a runnable paint example and a complete canvas-input guide.
+
 ## 0.2.0
 
 - Add pointer-bound `TextBox` with placeholder, password, width, focus,

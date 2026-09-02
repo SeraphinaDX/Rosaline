@@ -19,11 +19,19 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] CheckBox
 - [ ] RadioButton
 - [ ] Keyboard events and shortcuts
-- [ ] Mouse events for Canvas
 - [x] Focus and tab navigation
 - [x] Basic validation patterns and beginner-friendly form documentation
 
-## v0.3 — Real application building
+## v0.3 — Interactive canvas
+
+- [x] Mouse position and button events
+- [x] Click-and-drag input
+- [x] Shift, Control, and Alt mouse modifiers
+- [x] Automatic canvas redraw after input
+- [x] Explicit redraw from other callbacks
+- [x] Runnable paint example and beginner guide
+
+## v0.4 — Real application building
 
 - [ ] Images and image loading
 - [ ] Scroll areas
@@ -32,16 +40,16 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [ ] Confirmation dialogs
 - [ ] Timers and animation
 
-## v0.4 — Drawing applications
+## v0.5 — Drawing applications
 
 - [ ] Paths and Bézier curves
 - [ ] Transforms: translate, rotate, and scale
 - [ ] Clipping
-- [ ] Canvas redraw/invalidation
+- [x] Basic canvas redraw/invalidation
 - [ ] Off-screen images
 - [ ] Image export
 
-## v0.5 — Larger interfaces
+## v0.6 — Larger interfaces
 
 - [ ] Lists, tables, tabs, and trees
 - [ ] Multiple windows

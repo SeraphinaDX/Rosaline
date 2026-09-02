@@ -53,3 +53,14 @@ language.
 Focus order follows the order in which interactive widgets are mounted.
 Rosaline handles Tab and Shift+Tab traversal privately so application code does
 not need platform event handling for normal forms.
+
+## Canvas input and redraw
+
+Canvas mouse callbacks receive Rosaline's own `MouseEvent`; backend event types
+never cross the public API boundary. Coordinates are converted directly into
+the same top-left coordinate system used by drawing operations.
+
+The canvas drawing callback is the retained description of the picture.
+Rosaline clears and reruns it after mouse input. Applications update ordinary
+Go drawing state inside event callbacks instead of modifying backend objects.
+`Redraw` exposes the same operation to buttons and other UI callbacks.

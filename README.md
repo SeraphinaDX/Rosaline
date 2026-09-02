@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.2.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.3.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -79,7 +79,30 @@ rosaline.Run(
 See [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md),
 [docs/CHECKBOX.md](docs/CHECKBOX.md), and [docs/FORMS.md](docs/FORMS.md).
 
-## Included in v0.2.0
+## An interactive canvas
+
+Canvas callbacks use the same coordinates as drawing commands:
+
+```go
+var x, y float64
+
+canvas := rosaline.Canvas(func(c *rosaline.DrawingCanvas) {
+	c.Clear(rosaline.White)
+	c.FillCircle(x, y, 12, rosaline.Rose)
+})
+
+canvas.OnMouseDown(func(event rosaline.MouseEvent) {
+	if event.Button == rosaline.MouseLeft {
+		x, y = event.X, event.Y
+	}
+})
+```
+
+Rosaline redraws automatically after mouse callbacks. See
+[docs/CANVAS_INPUT.md](docs/CANVAS_INPUT.md) for clicking, dragging, modifier
+keys, manual redraws, and a complete paint program.
+
+## Included in v0.3.0
 
 - Application windows
 - Labels and dynamic labels
@@ -91,8 +114,10 @@ See [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md),
 - Checkboxes bound to Go Boolean variables
 - Tab and Shift+Tab keyboard navigation
 - A first-class canvas with lines, rectangles, circles, and text
+- Canvas clicks, pointer movement, dragging, and button-release events
+- Automatic and manually requested canvas redraws
 - Semantic colors and themes
-- Runnable hello, counter, canvas, and forms examples
+- Runnable hello, counter, canvas, forms, and paint examples
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -104,13 +129,13 @@ CGO_ENABLED=0 go run ./examples/hello
 CGO_ENABLED=0 go run ./examples/counter
 CGO_ENABLED=0 go run ./examples/canvas
 CGO_ENABLED=0 go run ./examples/forms
+CGO_ENABLED=0 go run ./examples/paint
 ```
 
 ## Project status
 
 The API is experimental until v1.0. The next milestones add radio buttons,
-general keyboard and mouse events, canvas redraw/input, images, scrolling,
-menus, and file dialogs.
+general keyboard events, images, scrolling, menus, and file dialogs.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to
