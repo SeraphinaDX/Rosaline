@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.10.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.11.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -299,7 +299,36 @@ busy mode. See [Radio Groups](docs/RADIO_GROUPS.md),
 [Progress Bars](docs/PROGRESS_BARS.md), and the complete
 [Task Settings application](docs/TASK_SETTINGS_APPLICATION.md).
 
-## Included in v0.10.0
+## Keyboard input without platform code
+
+Windows and canvases receive the same small `KeyEvent`, and applications can
+define shortcuts without building a menu:
+
+```go
+canvas := rosaline.Canvas(draw).
+	Focus().
+	OnKeyDown(func(event rosaline.KeyEvent) {
+		if event.Is(rosaline.KeyRight) {
+			x += 10
+		}
+	})
+
+rosaline.RunApp(rosaline.App{
+	Shortcuts: rosaline.Shortcuts(
+		rosaline.Shortcut("Primary+S", save),
+		rosaline.Shortcut("F1", showHelp),
+	),
+	Content: canvas,
+})
+```
+
+`Primary` follows the platform convention: Control on Linux and Windows,
+Command on macOS. Canvas key callbacks redraw automatically, and window key
+handlers observe input without breaking normal text editing. See
+[Keyboard Input and Shortcuts](docs/KEYBOARD_INPUT.md) and the complete
+[Keyboard Garden application](docs/KEYBOARD_GARDEN_APPLICATION.md).
+
+## Included in v0.11.0
 
 - Application windows
 - Labels and dynamic labels
@@ -318,6 +347,11 @@ busy mode. See [Radio Groups](docs/RADIO_GROUPS.md),
 - Determinate and indeterminate progress bars with custom maximums, size,
   direction, and start/stop controls
 - Tab and Shift+Tab keyboard navigation
+- Backend-neutral window and canvas key-down and key-up events
+- Friendly named key constants, printable text, and modifier fields
+- Menu-free application shortcuts with cross-platform `Primary` modifiers
+- Keyboard-enabled canvases with initial focus, click-to-focus, a visible focus
+  ring, and automatic redraw
 - A first-class canvas with lines, rectangles, circles, and text
 - Reusable paths with straight, quadratic, and cubic Bézier sections
 - Translate, rotate, scale, Push/Pop, and transformed clipping
@@ -359,9 +393,11 @@ busy mode. See [Radio Groups](docs/RADIO_GROUPS.md),
   About window, shared state, menus, and dynamic titles
 - A complete Task Settings application combining everyday controls, shared Go
   state, validation, dynamic choices, and both progress modes
+- A complete Keyboard Garden combining canvas input, modifiers, releases,
+  standalone shortcuts, drawing, dialogs, and PNG export
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
-  applications and Task Settings
+  applications, Task Settings, and Keyboard Garden
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -381,13 +417,13 @@ CGO_ENABLED=0 go run ./examples/preferences
 CGO_ENABLED=0 go run ./examples/filebrowser
 CGO_ENABLED=0 go run ./examples/windows
 CGO_ENABLED=0 go run ./examples/tasksettings
+CGO_ENABLED=0 go run ./examples/keyboard
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add general keyboard
-events, accessibility groundwork, custom widgets, and deeper Linux display
-testing.
+The API is experimental until v1.0. The next milestones add accessibility
+groundwork, custom widgets, and deeper Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

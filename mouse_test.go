@@ -62,6 +62,22 @@ func TestCanvasMouseOptions(t *testing.T) {
 	}
 }
 
+func TestCanvasKeyboardOptions(t *testing.T) {
+	down := 0
+	up := 0
+	canvas := Canvas(nil).
+		Focus().
+		OnKeyDown(func(KeyEvent) { down++ }).
+		OnKeyUp(func(KeyEvent) { up++ })
+
+	if !canvas.focus || canvas.onKeyDown == nil || canvas.onKeyUp == nil {
+		t.Fatal("canvas keyboard options were not stored")
+	}
+	if down != 0 || up != 0 {
+		t.Fatal("canvas keyboard handlers ran before an event")
+	}
+}
+
 func TestCanvasRedrawBeforeMountIsSafe(t *testing.T) {
 	Canvas(nil).Redraw()
 }

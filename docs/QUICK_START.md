@@ -168,5 +168,8 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
   [SLIDERS.md](SLIDERS.md). Display work with
   [PROGRESS_BARS.md](PROGRESS_BARS.md), then run
   `go run ./examples/tasksettings`.
+- Add window handlers, focused canvas keys, and standalone shortcuts with
+  [KEYBOARD_INPUT.md](KEYBOARD_INPUT.md), then run
+  `go run ./examples/keyboard`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

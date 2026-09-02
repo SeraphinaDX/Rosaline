@@ -72,6 +72,25 @@ Radio groups reserve one logical focus slot even though they contain several
 native buttons. Replacing their choices updates that slot to the selected
 button, so dynamic groups remain predictable in Tab traversal.
 
+## Keyboard boundary
+
+Native key symbols and platform modifier masks are converted into Rosaline's
+`KeyEvent` before application callbacks run. Named keys use stable `Key`
+constants, printable keys use lowercase values, and produced text remains
+separate so Shift and keyboard layouts do not blur key identity with typed
+content.
+
+Window handlers use the native toplevel binding tag. They can observe events
+from focused child controls after normal control behavior, so adding an
+`OnKeyDown` handler does not disable text editing. Canvas handlers bind to the
+canvas itself and participate in Rosaline's existing focus traversal and
+automatic-redraw lifecycle.
+
+Standalone shortcuts and menu accelerators share one private parser. The
+`Primary` modifier resolves to Control on Linux and Windows and Command on
+macOS; application code remains identical. Shortcut callbacks use the same
+flush, invoke, and cross-window refresh sequence as buttons and menus.
+
 ## Larger interfaces
 
 Lists and tabs wrap native backend controls while exposing only Rosaline

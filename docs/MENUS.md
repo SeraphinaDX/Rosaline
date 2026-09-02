@@ -17,10 +17,10 @@ func main() {
 			rosaline.Menu("File",
 				rosaline.MenuItem("Open…", func() {
 					rosaline.Message("Open", "Open was selected.")
-				}).Shortcut("Ctrl+O"),
+				}).Shortcut("Primary+O"),
 				rosaline.MenuSeparator(),
 				rosaline.MenuItem("Quit", rosaline.Quit).
-					Shortcut("Ctrl+Q"),
+					Shortcut("Primary+Q"),
 			),
 		),
 		Content: rosaline.Label("Try the File menu."),
@@ -36,12 +36,18 @@ callbacks are ordinary `func()` values, just like button callbacks.
 `Shortcut` both displays and binds the shortcut:
 
 ```go
-rosaline.MenuItem("Save As…", saveAs).Shortcut("Ctrl+Shift+S")
+rosaline.MenuItem("Save As…", saveAs).Shortcut("Primary+Shift+S")
 ```
 
-Supported modifiers are `Ctrl`, `Control`, `Shift`, and `Alt`. Combine them
-with a letter or named key such as `F4`. Menu shortcuts flush current form
-values before running and refresh dynamic widgets afterward.
+`Primary` means Control on Linux and Windows and Command on macOS. Explicit
+`Ctrl`, `Control`, `Shift`, `Alt`, `Option`, `Cmd`, `Command`, and `Super`
+modifiers are also supported. Combine them with a letter or named key such as
+`F4`. Menu shortcuts flush current form values before running and refresh
+dynamic widgets afterward.
+
+Menu items and standalone `rosaline.Shortcut` values share the same spelling
+and platform handling. See [KEYBOARD_INPUT.md](KEYBOARD_INPUT.md) for the full
+list and shortcuts that do not need a menu.
 
 ## Sharing actions
 
@@ -54,7 +60,7 @@ save := func() {
 }
 
 button := rosaline.Button("Save", save)
-item := rosaline.MenuItem("Save", save).Shortcut("Ctrl+S")
+item := rosaline.MenuItem("Save", save).Shortcut("Primary+S")
 ```
 
 This avoids two versions of the same application logic.
@@ -68,7 +74,7 @@ editor := rosaline.NewWindow(rosaline.WindowOptions{
 	Title: "Editor",
 	Menu: rosaline.MenuBar(
 		rosaline.Menu("File",
-			rosaline.MenuItem("Save", save).Shortcut("Ctrl+S"),
+			rosaline.MenuItem("Save", save).Shortcut("Primary+S"),
 		),
 	),
 	Content: editorContent,

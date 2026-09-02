@@ -81,6 +81,23 @@ canvas.OnMouseMove(func(event rosaline.MouseEvent) {
 The event also has `Shift`, `Control`, and `Alt` Boolean fields. These are true
 when the corresponding keyboard modifier is held during the mouse event.
 
+## Keyboard input
+
+A canvas can also receive backend-neutral key events:
+
+```go
+canvas.Focus().OnKeyDown(func(event rosaline.KeyEvent) {
+	if event.Is(rosaline.KeyRight) {
+		x += 10
+	}
+})
+```
+
+Keyboard-enabled canvases participate in Tab order, receive focus when clicked,
+show a focus ring, and redraw automatically after their key callbacks. See
+[KEYBOARD_INPUT.md](KEYBOARD_INPUT.md) and the complete
+[Keyboard Garden application](KEYBOARD_GARDEN_APPLICATION.md).
+
 ## Redrawing from another control
 
 Mouse callbacks redraw automatically. If a button or another Rosaline callback

@@ -29,4 +29,7 @@
 // RadioGroup and ComboBox provide compact pointer-bound choices. Slider and
 // ProgressBar share ordinary float64 values for numeric input and progress,
 // including indeterminate busy feedback.
+// KeyEvent supports window-wide and focused-canvas keyboard input. Standalone
+// shortcuts use familiar names and a cross-platform Primary modifier without
+// requiring a menu or exposing backend key values.
 package rosaline

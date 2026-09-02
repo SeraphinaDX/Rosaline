@@ -4,7 +4,6 @@ package rosaline
 
 import (
 	"strings"
-	"unicode/utf8"
 
 	tk "modernc.org/tk9.0"
 )
@@ -64,8 +63,8 @@ func MenuItem(text string, onClick func()) *MenuAction {
 	return &MenuAction{text: text, onClick: onClick}
 }
 
-// Shortcut displays and binds a keyboard shortcut such as "Ctrl+O" or
-// "Ctrl+Shift+S".
+// Shortcut displays and binds a keyboard shortcut such as "Primary+O" or
+// "Primary+Shift+S".
 func (m *MenuAction) Shortcut(shortcut string) *MenuAction {
 	m.shortcut = strings.TrimSpace(shortcut)
 	return m
@@ -95,55 +94,13 @@ func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget, window *tk.Wind
 		ctx.refresh()
 	}
 	options := []tk.Opt{tk.Lbl(m.text), tk.Command(invoke)}
-	if m.shortcut != "" {
-		options = append(options, tk.Accelerator(m.shortcut))
+	if _, ok := shortcutSequence(m.shortcut); ok {
+		options = append(options, tk.Accelerator(shortcutDisplay(m.shortcut)))
 	}
 	menu.AddCommand(options...)
-
-	if sequence, ok := shortcutSequence(m.shortcut); ok {
-		tk.Bind(window, sequence, tk.Command(func(event *tk.Event) {
-			invoke()
-			event.SetReturnCodeBreak()
-		}))
-	}
+	bindShortcut(ctx, window, m.shortcut, m.onClick)
 }
 
 func (menuSeparator) add(_ *mountContext, menu *tk.MenuWidget, _ *tk.Window) {
 	menu.AddSeparator()
-}
-
-func shortcutSequence(shortcut string) (string, bool) {
-	parts := strings.Split(shortcut, "+")
-	if len(parts) < 2 {
-		return "", false
-	}
-
-	modifiers := make([]string, 0, len(parts)-1)
-	hasShift := false
-	for _, part := range parts[:len(parts)-1] {
-		switch strings.ToLower(strings.TrimSpace(part)) {
-		case "ctrl", "control":
-			modifiers = append(modifiers, "Control")
-		case "shift":
-			modifiers = append(modifiers, "Shift")
-			hasShift = true
-		case "alt":
-			modifiers = append(modifiers, "Alt")
-		default:
-			return "", false
-		}
-	}
-
-	key := strings.TrimSpace(parts[len(parts)-1])
-	if key == "" {
-		return "", false
-	}
-	if utf8.RuneCountInString(key) == 1 {
-		if hasShift {
-			key = strings.ToUpper(key)
-		} else {
-			key = strings.ToLower(key)
-		}
-	}
-	return "<" + strings.Join(append(modifiers, key), "-") + ">", true
 }

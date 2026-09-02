@@ -18,7 +18,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] TextBox and TextArea
 - [x] CheckBox
 - [x] Radio groups
-- [ ] Keyboard events and shortcuts
+- [x] Keyboard events and shortcuts
 - [x] Focus and tab navigation
 - [x] Basic validation patterns and beginner-friendly form documentation
 
@@ -72,6 +72,15 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Dynamic options and choices
 - [x] Complete Task Settings application
 
+## v0.11 — Keyboard input
+
+- [x] Window key-down and key-up events
+- [x] Focused canvas keyboard input
+- [x] Friendly named keys and modifiers
+- [x] Standalone shortcuts without menus
+- [x] Cross-platform Primary shortcuts
+- [x] Complete Keyboard Garden application
+
 ## Documentation applications
 
 Each longer tutorial will explain why the program is structured as it is:
@@ -83,4 +92,5 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] Preferences application
 - [x] File browser
 - [x] Task settings
+- [x] Keyboard garden
 - [ ] Small canvas game

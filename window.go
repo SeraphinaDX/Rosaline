@@ -11,16 +11,19 @@ import (
 // WindowOptions describes a secondary application window. Every field is
 // optional; Rosaline supplies the same friendly defaults used by RunApp.
 type WindowOptions struct {
-	Title   string
-	Width   int
-	Height  int
-	Padding int
-	Theme   Theme
-	Menu    *AppMenuBar
-	Timers  []*Timer
-	Content Widget
-	Parent  *Window
-	OnClose func()
+	Title     string
+	Width     int
+	Height    int
+	Padding   int
+	Theme     Theme
+	Menu      *AppMenuBar
+	Timers    []*Timer
+	Shortcuts []KeyShortcut
+	OnKeyDown func(KeyEvent)
+	OnKeyUp   func(KeyEvent)
+	Content   Widget
+	Parent    *Window
+	OnClose   func()
 }
 
 // Window is a reusable secondary-window handle. Create one with NewWindow.
@@ -202,7 +205,7 @@ func (w *Window) mount() {
 
 	w.ctx = &mountContext{theme: options.Theme, session: w.session, owner: w}
 	w.mountedTimers = mountTimers(w.ctx, options.Timers)
-	mountWindowContent(w.ctx, w.native, options.Content, options.Padding, options.Menu)
+	mountWindowContent(w.ctx, w.native, options)
 	tk.WmProtocol(w.native, tk.WM_DELETE_WINDOW, w.Close)
 	w.native.Center()
 	tk.WmDeiconify(w.native)

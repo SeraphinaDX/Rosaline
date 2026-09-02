@@ -13,9 +13,12 @@ type CanvasWidget struct {
 	height      int
 	background  Color
 	expand      bool
+	focus       bool
 	onMouseDown func(MouseEvent)
 	onMouseMove func(MouseEvent)
 	onMouseUp   func(MouseEvent)
+	onKeyDown   func(KeyEvent)
+	onKeyUp     func(KeyEvent)
 	widget      *tk.CanvasWidget
 	tkImage     *tk.Img
 	redrawCount uint64
@@ -57,6 +60,15 @@ func (c *CanvasWidget) Expand() *CanvasWidget {
 	return c
 }
 
+// Focus asks Rosaline to give this canvas keyboard focus when the window
+// opens. A canvas with a key handler also participates in Tab focus order.
+func (c *CanvasWidget) Focus() *CanvasWidget {
+	if c != nil {
+		c.focus = true
+	}
+	return c
+}
+
 // OnMouseDown runs when a mouse button is pressed over the canvas.
 func (c *CanvasWidget) OnMouseDown(handler func(MouseEvent)) *CanvasWidget {
 	c.onMouseDown = handler
@@ -73,6 +85,23 @@ func (c *CanvasWidget) OnMouseMove(handler func(MouseEvent)) *CanvasWidget {
 // OnMouseUp runs when a mouse button is released over the canvas.
 func (c *CanvasWidget) OnMouseUp(handler func(MouseEvent)) *CanvasWidget {
 	c.onMouseUp = handler
+	return c
+}
+
+// OnKeyDown runs when a key is pressed while the canvas has focus. Clicking a
+// keyboard-enabled canvas gives it focus.
+func (c *CanvasWidget) OnKeyDown(handler func(KeyEvent)) *CanvasWidget {
+	if c != nil {
+		c.onKeyDown = handler
+	}
+	return c
+}
+
+// OnKeyUp runs when a key is released while the canvas has focus.
+func (c *CanvasWidget) OnKeyUp(handler func(KeyEvent)) *CanvasWidget {
+	if c != nil {
+		c.onKeyUp = handler
+	}
 	return c
 }
 
@@ -107,12 +136,20 @@ func (c *CanvasWidget) Picture() *Picture {
 }
 
 func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
+	keyboardEnabled := c.focus || c.onKeyDown != nil || c.onKeyUp != nil
+	highlightThickness := 0
+	if keyboardEnabled {
+		highlightThickness = 2
+	}
 	widget := parent.Canvas(
 		tk.Width(c.width),
 		tk.Height(c.height),
 		tk.Background(c.background.String()),
-		tk.Highlightthickness(0),
+		tk.Highlightthickness(highlightThickness),
+		tk.Highlightcolor(ctx.theme.Primary.String()),
+		tk.Highlightbackground(ctx.theme.Border.String()),
 		tk.Borderwidth(0),
+		takeFocusOption(keyboardEnabled),
 	)
 	c.widget = widget
 	c.tkImage = tk.NewPhoto(tk.Width(c.width), tk.Height(c.height))
@@ -138,17 +175,20 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		ctx.refresh()
 	}
 
-	if c.onMouseDown != nil {
-		for _, binding := range []struct {
-			sequence string
-			button   MouseButton
-		}{
-			{"<Button-1>", MouseLeft},
-			{"<Button-2>", MouseMiddle},
-			{"<Button-3>", MouseRight},
-		} {
+	for _, binding := range []struct {
+		sequence string
+		button   MouseButton
+	}{
+		{"<Button-1>", MouseLeft},
+		{"<Button-2>", MouseMiddle},
+		{"<Button-3>", MouseRight},
+	} {
+		if c.onMouseDown != nil || (keyboardEnabled && binding.button == MouseLeft) {
 			button := binding.button
 			tk.Bind(widget.Window, binding.sequence, tk.Command(func(event *tk.Event) {
+				if keyboardEnabled && button == MouseLeft {
+					tk.Focus(widget.Window)
+				}
 				dispatch(c.onMouseDown, mouseEvent(event, button, true))
 			}))
 		}
@@ -175,6 +215,31 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 				dispatch(c.onMouseUp, mouseEvent(event, button, false))
 			}))
 		}
+	}
+
+	dispatchKey := func(handler func(KeyEvent), event *tk.Event) {
+		if handler == nil {
+			return
+		}
+		before := c.redrawCount
+		handler(keyEvent(event))
+		if c.redrawCount == before {
+			c.Redraw()
+		}
+		ctx.refresh()
+	}
+	if c.onKeyDown != nil {
+		tk.Bind(widget.Window, "<KeyPress>", tk.Command(func(event *tk.Event) {
+			dispatchKey(c.onKeyDown, event)
+		}))
+	}
+	if c.onKeyUp != nil {
+		tk.Bind(widget.Window, "<KeyRelease>", tk.Command(func(event *tk.Event) {
+			dispatchKey(c.onKeyUp, event)
+		}))
+	}
+	if keyboardEnabled {
+		ctx.addFocusable(widget.Window, c.focus)
 	}
 
 	return mountedWidget{window: widget.Window, expandX: c.expand, expandY: c.expand}

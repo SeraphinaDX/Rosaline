@@ -2,6 +2,25 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.11.0
+
+- Add backend-neutral `Key`, `KeyEvent`, and friendly constants for common
+  navigation, editing, modifier, and function keys.
+- Add window-wide `OnKeyDown` and `OnKeyUp` callbacks to `App` and
+  `WindowOptions` without replacing native text or control behavior.
+- Add focused canvas key-down and key-up callbacks with automatic redraw,
+  initial focus, click-to-focus, Tab traversal, and a visible focus ring.
+- Add standalone `Shortcut` values and the convenient `Shortcuts` collector so
+  applications can bind commands without creating a menu.
+- Add `Primary` shortcuts and event modifiers that mean Control on Linux and
+  Windows and Command on macOS.
+- Extend menu shortcuts with `Primary`, named unmodified keys such as Escape
+  and F1, platform-appropriate accelerator labels, and shared parsing.
+- Add non-visual tests for key conversion, platform modifiers, shortcut
+  parsing and display, construction, and canvas keyboard options.
+- Add a complete keyboard-input guide and Keyboard Garden application tutorial
+  combining movement, modifiers, releases, shortcuts, dialogs, and PNG export.
+
 ## 0.10.0
 
 - Add pointer-bound `RadioGroup` controls with separate visible labels and

@@ -10,14 +10,17 @@ import (
 
 // App describes Rosaline's primary application window.
 type App struct {
-	Title   string
-	Width   int
-	Height  int
-	Padding int
-	Theme   Theme
-	Menu    *AppMenuBar
-	Timers  []*Timer
-	Content Widget
+	Title     string
+	Width     int
+	Height    int
+	Padding   int
+	Theme     Theme
+	Menu      *AppMenuBar
+	Timers    []*Timer
+	Shortcuts []KeyShortcut
+	OnKeyDown func(KeyEvent)
+	OnKeyUp   func(KeyEvent)
+	Content   Widget
 }
 
 var activeContext *mountContext
@@ -32,7 +35,8 @@ func RunApp(app App) {
 	options := (&Window{options: WindowOptions{
 		Title: app.Title, Width: app.Width, Height: app.Height,
 		Padding: app.Padding, Theme: app.Theme, Menu: app.Menu,
-		Timers: app.Timers, Content: app.Content,
+		Timers: app.Timers, Shortcuts: app.Shortcuts,
+		OnKeyDown: app.OnKeyDown, OnKeyUp: app.OnKeyUp, Content: app.Content,
 	}}).resolvedOptions()
 
 	session := &applicationSession{
@@ -67,7 +71,7 @@ func RunApp(app App) {
 	tk.App.WmTitle(options.Title)
 	tk.WmGeometry(tk.App, fmt.Sprintf("%dx%d", options.Width, options.Height))
 	tk.App.Configure(tk.Background(options.Theme.Background.String()))
-	mountWindowContent(ctx, tk.App, options.Content, options.Padding, options.Menu)
+	mountWindowContent(ctx, tk.App, options)
 	tk.WmProtocol(tk.App, tk.WM_DELETE_WINDOW, Quit)
 	tk.App.Center()
 	if ctx.initialFocus != nil {
@@ -96,20 +100,21 @@ func Quit() {
 	tk.Destroy(tk.App)
 }
 
-func mountWindowContent(ctx *mountContext, parent *tk.Window, content Widget, padding int, menu *AppMenuBar) {
-	if menu != nil {
-		menu.mount(ctx, parent)
+func mountWindowContent(ctx *mountContext, parent *tk.Window, options WindowOptions) {
+	if options.Menu != nil {
+		options.Menu.mount(ctx, parent)
 	}
-	root := content.mount(ctx, parent)
-	options := []tk.Opt{
+	mountKeyboard(ctx, parent, options.OnKeyDown, options.OnKeyUp, options.Shortcuts)
+	root := options.Content.mount(ctx, parent)
+	packOptions := []tk.Opt{
 		tk.Fill("both"),
-		tk.Padx(padding),
-		tk.Pady(padding),
+		tk.Padx(options.Padding),
+		tk.Pady(options.Padding),
 	}
 	if root.expandX || root.expandY {
-		options = append(options, tk.Expand(true))
+		packOptions = append(packOptions, tk.Expand(true))
 	}
-	tk.Pack(append([]tk.Opt{root.window}, options...)...)
+	tk.Pack(append([]tk.Opt{root.window}, packOptions...)...)
 	ctx.refresh()
 	ctx.installFocusTraversal()
 }
