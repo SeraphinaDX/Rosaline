@@ -156,5 +156,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
   `go run ./examples/imageviewer`.
 - Organize a larger interface with [LISTS.md](LISTS.md) and [TABS.md](TABS.md),
   then run `go run ./examples/preferences`.
+- Display structured data with [TABLES.md](TABLES.md), then build a real
+  filesystem application with [FILE_BROWSER.md](FILE_BROWSER.md).
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

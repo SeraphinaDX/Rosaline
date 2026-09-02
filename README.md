@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.6.1`. The public API is small on purpose and grows
+Rosaline is currently at `v0.7.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -203,7 +203,26 @@ preferences := rosaline.Tabs(
 See [docs/LISTS.md](docs/LISTS.md), [docs/TABS.md](docs/TABS.md), and the
 complete [Preferences application](docs/PREFERENCES_APPLICATION.md).
 
-## Included in v0.6.0
+## Tables made from ordinary Go data
+
+Tables use normal strings and slices rather than a framework-specific model:
+
+```go
+files := rosaline.Table("Name", "Type", "Size").
+	SetRows(
+		[]string{"README.md", "Markdown", "8 KB"},
+		[]string{"picture.png", "Image", "2.4 MB"},
+	).
+	OnActivate(func(row int, values []string) {
+		fmt.Println("opened", values[0])
+	})
+```
+
+Selection, keyboard activation, column sizing, dynamic replacement, and both
+scrollbars are built in. See [docs/TABLES.md](docs/TABLES.md) and the complete
+[File Browser application](docs/FILE_BROWSER.md).
+
+## Included in v0.7.0
 
 - Application windows
 - Labels and dynamic labels
@@ -232,12 +251,16 @@ complete [Preferences application](docs/PREFERENCES_APPLICATION.md).
 - Scrollable single-selection lists with selection and activation callbacks
 - Dynamic list replacement and safe programmatic selection
 - Focus traversal that automatically skips controls on hidden tab pages
+- Native multi-column tables built from ordinary `[][]string` data
+- Table selection, activation, column sizing, dynamic rows, and two-axis
+  scrolling
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
 - A complete Preferences application combining tabs, lists, form controls, and
   a live canvas preview
+- A complete File Browser using the Table API and Go's standard filesystem APIs
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
-  animation examples, plus the Preferences application
+  animation examples, plus the Preferences and File Browser applications
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -254,13 +277,14 @@ CGO_ENABLED=0 go run ./examples/paint
 CGO_ENABLED=0 go run ./examples/imageviewer
 CGO_ENABLED=0 go run ./examples/animation
 CGO_ENABLED=0 go run ./examples/preferences
+CGO_ENABLED=0 go run ./examples/filebrowser
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add tables, trees,
-multiple windows, radio buttons, general keyboard events, accessibility
-groundwork, and deeper Linux display testing.
+The API is experimental until v1.0. The next milestones add trees, multiple
+windows, radio buttons, general keyboard events, accessibility groundwork, and
+deeper Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

@@ -20,4 +20,6 @@
 // support complete graphical applications with one consistent drawing API.
 // Tabs organize larger interfaces into composable pages. Lists provide native
 // scrolling, keyboard selection, activation, and programmatic item updates.
+// Tables display ordinary slices of strings under named columns with native
+// scrolling, keyboard behavior, selection, and activation.
 package rosaline

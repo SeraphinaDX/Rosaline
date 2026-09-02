@@ -2,6 +2,20 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.7.0
+
+- Add native multi-column tables with beginner-friendly string headings and
+  `[][]string` rows.
+- Add safe table selection, programmatic selection, and deep-copy inspection.
+- Add mouse and keyboard selection and activation callbacks.
+- Add dynamic row replacement with predictable selection preservation.
+- Add configurable column widths, visible-row height, layout expansion, and
+  automatic horizontal and vertical scrollbars.
+- Add thorough non-visual Table API tests.
+- Add a complete Tables guide.
+- Add a File Browser application and tutorial using ordinary Go filesystem
+  APIs, menus, shortcuts, buttons, an address box, and a dynamic table.
+
 ## 0.6.1
 
 - Fix `invalid command true` when switching tabs by passing Tcl's required

@@ -80,6 +80,13 @@ events update those fields before application callbacks run; programmatic
 selection updates the backend after mounting. This keeps `Selected` useful
 before, during, and after UI construction without exposing backend objects.
 
+Tables follow the same rule while keeping their data deliberately simple.
+Column headings are strings and rows are slices of strings. Rosaline copies and
+normalizes that data, maps native item identifiers back to stable row indices,
+and returns fresh copies to callbacks and query methods. Applications keep rich
+domain objects in their own Go structs and only convert the fields they want to
+display into table rows.
+
 ## Canvas input and redraw
 
 Canvas mouse callbacks receive Rosaline's own `MouseEvent`; backend event types

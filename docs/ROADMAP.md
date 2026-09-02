@@ -54,7 +54,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 - [x] Lists
 - [x] Tabs
-- [ ] Tables
+- [x] Tables
 - [ ] Trees
 - [ ] Multiple windows
 - [ ] Custom widgets
@@ -71,5 +71,5 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] Image viewer
 - [x] Paint program
 - [x] Preferences application
-- [ ] File browser
+- [x] File browser
 - [ ] Small canvas game
