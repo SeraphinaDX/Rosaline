@@ -2,6 +2,19 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.6.0
+
+- Add native tabbed interfaces with `Tab`, `Tabs`, selection queries,
+  programmatic selection, expansion, and change callbacks.
+- Add scrollable single-selection lists with configurable size and expansion.
+- Add list selection and activation callbacks for mouse and keyboard use.
+- Add safe list inspection, programmatic selection, and dynamic item
+  replacement.
+- Keep Tab and Shift+Tab navigation out of inactive tab pages.
+- Add complete Lists and Tabs guides.
+- Add a Preferences application tutorial combining tabs, lists, form controls,
+  dynamic labels, buttons, and a live canvas preview.
+
 ## 0.5.0
 
 - Add reusable paths with lines, quadratic curves, cubic Bézier curves, and

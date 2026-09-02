@@ -154,5 +154,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
   `go run ./examples/paint`.
 - Build a real desktop program with [IMAGE_VIEWER.md](IMAGE_VIEWER.md), then run
   `go run ./examples/imageviewer`.
+- Organize a larger interface with [LISTS.md](LISTS.md) and [TABS.md](TABS.md),
+  then run `go run ./examples/preferences`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

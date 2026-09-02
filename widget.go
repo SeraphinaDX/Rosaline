@@ -17,13 +17,19 @@ type mountedWidget struct {
 	expandY bool
 }
 
+type focusableWidget struct {
+	window  *tk.Window
+	visible func() bool
+}
+
 type mountContext struct {
-	theme        Theme
-	flushes      []func()
-	refreshes    []func()
-	focusables   []*tk.Window
-	initialFocus *tk.Window
-	closed       bool
+	theme          Theme
+	flushes        []func()
+	refreshes      []func()
+	focusables     []focusableWidget
+	focusCondition func() bool
+	initialFocus   *tk.Window
+	closed         bool
 }
 
 func (c *mountContext) flush() {
@@ -45,10 +51,45 @@ func (c *mountContext) refresh() {
 }
 
 func (c *mountContext) addFocusable(window *tk.Window, initial bool) {
-	c.focusables = append(c.focusables, window)
-	if initial && c.initialFocus == nil {
+	focusable := focusableWidget{window: window, visible: c.focusCondition}
+	c.focusables = append(c.focusables, focusable)
+	if initial && c.initialFocus == nil && focusable.isVisible() {
 		c.initialFocus = window
 	}
+}
+
+func (f focusableWidget) isVisible() bool {
+	return f.visible == nil || f.visible()
+}
+
+func (c *mountContext) withFocusCondition(condition func() bool, mount func()) {
+	previous := c.focusCondition
+	if previous == nil {
+		c.focusCondition = condition
+	} else {
+		c.focusCondition = func() bool {
+			return previous() && condition()
+		}
+	}
+	mount()
+	c.focusCondition = previous
+}
+
+func (c *mountContext) relativeFocus(from, step int) *tk.Window {
+	count := len(c.focusables)
+	if count == 0 {
+		return nil
+	}
+	for offset := 1; offset <= count; offset++ {
+		index := (from + step*offset) % count
+		if index < 0 {
+			index += count
+		}
+		if c.focusables[index].isVisible() {
+			return c.focusables[index].window
+		}
+	}
+	return nil
 }
 
 func (c *mountContext) installFocusTraversal() {
@@ -56,27 +97,25 @@ func (c *mountContext) installFocusTraversal() {
 		return
 	}
 
-	for i, window := range c.focusables {
-		next := c.focusables[(i+1)%len(c.focusables)]
-		previous := c.focusables[(i-1+len(c.focusables))%len(c.focusables)]
-
+	for i, focusable := range c.focusables {
+		index := i
 		forward := tk.Command(func(event *tk.Event) {
 			c.flush()
-			tk.Focus(next)
+			if next := c.relativeFocus(index, 1); next != nil {
+				tk.Focus(next)
+			}
 			event.SetReturnCodeBreak()
 		})
 		backward := tk.Command(func(event *tk.Event) {
 			c.flush()
-			tk.Focus(previous)
+			if previous := c.relativeFocus(index, -1); previous != nil {
+				tk.Focus(previous)
+			}
 			event.SetReturnCodeBreak()
 		})
 
-		tk.Bind(window, "<Tab>", forward)
-		tk.Bind(window, "<Shift-Key-Tab>", backward)
-		tk.Bind(window, "<ISO_Left_Tab>", tk.Command(func(event *tk.Event) {
-			c.flush()
-			tk.Focus(previous)
-			event.SetReturnCodeBreak()
-		}))
+		tk.Bind(focusable.window, "<Tab>", forward)
+		tk.Bind(focusable.window, "<Shift-Key-Tab>", backward)
+		tk.Bind(focusable.window, "<ISO_Left_Tab>", backward)
 	}
 }

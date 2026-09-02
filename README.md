@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.5.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.6.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -183,7 +183,27 @@ Use `After` for one delayed callback and `Animate` for a frame-rate-based
 canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 [docs/ANIMATION.md](docs/ANIMATION.md).
 
-## Included in v0.5.0
+## Tabs and selectable lists
+
+Larger applications can group related pages and present scrollable choices
+without leaving Rosaline's small composable API:
+
+```go
+themes := rosaline.List("Rosaline", "Lavender", "Ocean").
+	OnSelect(func(index int, value string) {
+		fmt.Println("selected", value)
+	})
+
+preferences := rosaline.Tabs(
+	rosaline.Tab("Appearance", themes),
+	rosaline.Tab("About", rosaline.Label("Built with Rosaline")),
+).Expand()
+```
+
+See [docs/LISTS.md](docs/LISTS.md), [docs/TABS.md](docs/TABS.md), and the
+complete [Preferences application](docs/PREFERENCES_APPLICATION.md).
+
+## Included in v0.6.0
 
 - Application windows
 - Labels and dynamic labels
@@ -208,10 +228,16 @@ canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 - Repeating and one-shot application timers
 - Start, stop, restart, and running-state timer controls
 - Frame-rate-based canvas animation
+- Native tabbed interfaces with selection callbacks and programmatic selection
+- Scrollable single-selection lists with selection and activation callbacks
+- Dynamic list replacement and safe programmatic selection
+- Focus traversal that automatically skips controls on hidden tab pages
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
+- A complete Preferences application combining tabs, lists, form controls, and
+  a live canvas preview
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
-  animation examples
+  animation examples, plus the Preferences application
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -227,13 +253,14 @@ CGO_ENABLED=0 go run ./examples/forms
 CGO_ENABLED=0 go run ./examples/paint
 CGO_ENABLED=0 go run ./examples/imageviewer
 CGO_ENABLED=0 go run ./examples/animation
+CGO_ENABLED=0 go run ./examples/preferences
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add lists, tables,
-tabs, trees, multiple windows, radio buttons, general keyboard events,
-accessibility groundwork, and deeper Linux display testing.
+The API is experimental until v1.0. The next milestones add tables, trees,
+multiple windows, radio buttons, general keyboard events, accessibility
+groundwork, and deeper Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

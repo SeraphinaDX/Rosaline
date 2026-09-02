@@ -63,7 +63,22 @@ language.
 
 Focus order follows the order in which interactive widgets are mounted.
 Rosaline handles Tab and Shift+Tab traversal privately so application code does
-not need platform event handling for normal forms.
+not need platform event handling for normal forms. Tab pages add a dynamic
+visibility condition to their child controls, so keyboard traversal skips
+controls on inactive pages without unmounting or recreating their Go state.
+
+## Larger interfaces
+
+Lists and tabs wrap native backend controls while exposing only Rosaline
+widgets, strings, indices, and Go callbacks. A list owns a copy of its item
+slice and normalizes selection when items change. A tab page mounts ordinary
+Rosaline content inside a private page frame, preserving the same composition
+and expansion rules used elsewhere.
+
+Both controls keep their selection in normal Go fields. Backend selection
+events update those fields before application callbacks run; programmatic
+selection updates the backend after mounting. This keeps `Selected` useful
+before, during, and after UI construction without exposing backend objects.
 
 ## Canvas input and redraw
 

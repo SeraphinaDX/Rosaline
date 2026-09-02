@@ -52,7 +52,10 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 ## v0.6 — Larger interfaces
 
-- [ ] Lists, tables, tabs, and trees
+- [x] Lists
+- [x] Tabs
+- [ ] Tables
+- [ ] Trees
 - [ ] Multiple windows
 - [ ] Custom widgets
 - [ ] Accessibility groundwork
@@ -67,5 +70,6 @@ Each longer tutorial will explain why the program is structured as it is:
 - [ ] Notepad
 - [x] Image viewer
 - [x] Paint program
+- [x] Preferences application
 - [ ] File browser
 - [ ] Small canvas game

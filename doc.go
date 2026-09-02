@@ -18,4 +18,6 @@
 // animation without exposing the private event loop.
 // Paths, transforms, clipping, off-screen rendering, and PNG or AVIF export
 // support complete graphical applications with one consistent drawing API.
+// Tabs organize larger interfaces into composable pages. Lists provide native
+// scrolling, keyboard selection, activation, and programmatic item updates.
 package rosaline
