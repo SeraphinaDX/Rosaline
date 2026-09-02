@@ -32,6 +32,15 @@ type mountContext struct {
 	closed         bool
 }
 
+// takeFocusOption must use Tcl's literal 0 and 1 values. The -takefocus
+// option treats other values, including "true" and "false", as Tcl scripts.
+func takeFocusOption(enabled bool) tk.Opt {
+	if enabled {
+		return tk.Takefocus(1)
+	}
+	return tk.Takefocus(0)
+}
+
 func (c *mountContext) flush() {
 	if c.closed {
 		return

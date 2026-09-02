@@ -49,7 +49,7 @@ func (b *ButtonWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		tk.Pady(7),
 		tk.Relief("flat"),
 		tk.Borderwidth(0),
-		tk.Takefocus(true),
+		takeFocusOption(true),
 	)
 	ctx.addFocusable(button.Window, false)
 	return mountedWidget{window: button.Window}

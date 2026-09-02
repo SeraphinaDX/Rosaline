@@ -209,7 +209,7 @@ func (l *ListWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 		tk.Height(l.rows),
 		tk.Selectmode("browse"),
 		tk.Exportselection(false),
-		tk.Takefocus(true),
+		takeFocusOption(true),
 		tk.Background(ctx.theme.Surface.String()),
 		tk.Foreground(ctx.theme.Text.String()),
 		tk.Selectbackground(ctx.theme.Primary.String()),

@@ -2,6 +2,12 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.6.1
+
+- Fix `invalid command true` when switching tabs by passing Tcl's required
+  numeric `0` and `1` values to every widget's `-takefocus` option.
+- Add a regression test covering both enabled and disabled focus options.
+
 ## 0.6.0
 
 - Add native tabbed interfaces with `Tab`, `Tabs`, selection queries,

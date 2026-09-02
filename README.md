@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.6.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.6.1`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals

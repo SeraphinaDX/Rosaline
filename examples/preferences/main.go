@@ -95,7 +95,7 @@ func main() {
 			}),
 		).Gap(10).Expand()),
 		rosaline.Tab("About", rosaline.Column(
-			rosaline.Label("Rosaline v0.6.0").Color(rosaline.Rose),
+			rosaline.Label("Rosaline v0.6.1").Color(rosaline.Rose),
 			rosaline.Label("A small, beginner-friendly GUI and graphics library for Go."),
 			rosaline.Label("Pure Go · Linux first-class · LGPL-3.0-or-later"),
 		).Gap(12).Expand()),

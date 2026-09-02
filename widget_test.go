@@ -3,10 +3,20 @@
 package rosaline
 
 import (
+	"fmt"
 	"testing"
 
 	tk "modernc.org/tk9.0"
 )
+
+func TestTakeFocusOptionsUseTclNumericBooleans(t *testing.T) {
+	if got := fmt.Sprint(takeFocusOption(true)); got != "-takefocus 1" {
+		t.Fatalf("enabled takefocus option = %q, want numeric 1", got)
+	}
+	if got := fmt.Sprint(takeFocusOption(false)); got != "-takefocus 0" {
+		t.Fatalf("disabled takefocus option = %q, want numeric 0", got)
+	}
+}
 
 func TestRelativeFocusSkipsHiddenWidgets(t *testing.T) {
 	first := &tk.Window{}

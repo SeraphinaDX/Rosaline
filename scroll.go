@@ -52,12 +52,12 @@ func (s *ScrollWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 	var canvas *tk.CanvasWidget
 	xScroll := frame.Scrollbar(
 		tk.Orient("horizontal"),
-		tk.Takefocus(false),
+		takeFocusOption(false),
 		tk.Command(func(event *tk.Event) { event.Xview(canvas) }),
 	)
 	yScroll := frame.Scrollbar(
 		tk.Orient("vertical"),
-		tk.Takefocus(false),
+		takeFocusOption(false),
 		tk.Command(func(event *tk.Event) { event.Yview(canvas) }),
 	)
 	canvas = frame.Canvas(

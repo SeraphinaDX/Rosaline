@@ -61,7 +61,7 @@ func (t *TextAreaWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		tk.Highlightthickness(1),
 		tk.Highlightbackground(ctx.theme.Border.String()),
 		tk.Highlightcolor(ctx.theme.Primary.String()),
-		tk.Takefocus(true),
+		takeFocusOption(true),
 	)
 	if *t.value != "" {
 		area.Insert("1.0", *t.value)

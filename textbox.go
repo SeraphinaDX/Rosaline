@@ -77,7 +77,7 @@ func (t *TextBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidge
 		tk.Highlightthickness(1),
 		tk.Highlightbackground(ctx.theme.Border.String()),
 		tk.Highlightcolor(ctx.theme.Primary.String()),
-		tk.Takefocus(true),
+		takeFocusOption(true),
 	}
 	if t.placeholder != "" {
 		options = append(options,

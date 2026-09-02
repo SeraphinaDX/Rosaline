@@ -70,7 +70,7 @@ func (c *CheckBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		tk.Selectcolor(ctx.theme.Surface.String()),
 		tk.Highlightcolor(ctx.theme.Primary.String()),
 		tk.Highlightbackground(ctx.theme.Background.String()),
-		tk.Takefocus(true),
+		takeFocusOption(true),
 		tk.Anchor("w"),
 	)
 
