@@ -23,15 +23,22 @@ type mountContext struct {
 	refreshes    []func()
 	focusables   []*tk.Window
 	initialFocus *tk.Window
+	closed       bool
 }
 
 func (c *mountContext) flush() {
+	if c.closed {
+		return
+	}
 	for _, flush := range c.flushes {
 		flush()
 	}
 }
 
 func (c *mountContext) refresh() {
+	if c.closed {
+		return
+	}
 	for _, refresh := range c.refreshes {
 		refresh()
 	}

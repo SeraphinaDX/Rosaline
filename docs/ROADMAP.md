@@ -33,11 +33,12 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 ## v0.4 — Real application building
 
-- [ ] Images and image loading
-- [ ] Scroll areas
-- [ ] Menus
-- [ ] Open and save dialogs
-- [ ] Confirmation dialogs
+- [x] Images and image loading
+- [x] Scroll areas
+- [x] Menus and shortcuts
+- [x] Open and save dialogs
+- [x] Confirmation and error dialogs
+- [x] Complete image-viewer application
 - [ ] Timers and animation
 
 ## v0.5 — Drawing applications

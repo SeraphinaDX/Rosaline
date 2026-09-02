@@ -15,8 +15,11 @@ type App struct {
 	Height  int
 	Padding int
 	Theme   Theme
+	Menu    *AppMenuBar
 	Content Widget
 }
+
+var activeContext *mountContext
 
 // Run opens a window containing content using beginner-friendly defaults.
 func Run(content Widget) {
@@ -48,9 +51,14 @@ func RunApp(app App) {
 	}
 
 	ctx := &mountContext{theme: app.Theme}
+	activeContext = ctx
+	defer func() { activeContext = nil }()
 	tk.App.WmTitle(app.Title)
 	tk.WmGeometry(tk.App, fmt.Sprintf("%dx%d", app.Width, app.Height))
 	tk.App.Configure(tk.Background(app.Theme.Background.String()))
+	if app.Menu != nil {
+		app.Menu.mount(ctx)
+	}
 
 	root := app.Content.mount(ctx, tk.App)
 	options := []tk.Opt{
@@ -70,4 +78,13 @@ func RunApp(app App) {
 		tk.Focus(ctx.initialFocus)
 	}
 	tk.App.Wait()
+}
+
+// Quit closes the Rosaline application.
+func Quit() {
+	if activeContext == nil {
+		return
+	}
+	activeContext.closed = true
+	tk.Destroy(tk.App)
 }

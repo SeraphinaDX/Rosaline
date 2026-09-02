@@ -64,3 +64,25 @@ The canvas drawing callback is the retained description of the picture.
 Rosaline clears and reruns it after mouse input. Applications update ordinary
 Go drawing state inside event callbacks instead of modifying backend objects.
 `Redraw` exposes the same operation to buttons and other UI callbacks.
+
+## Images and files
+
+Rosaline decodes image files through Go's standard `image.Image` interface and
+pure-Go format packages before handing pixels to the private backend. Invalid
+or missing files therefore return normal Go errors with useful filenames rather
+than failing inside the event loop.
+
+File dialogs choose paths only. Applications continue to read and write data
+with normal Go packages such as `os` and `io`, keeping file formats and
+application policy outside the GUI layer.
+
+## Menus and application callbacks
+
+Buttons, menu commands, and menu shortcuts all use `func()` callbacks. Rosaline
+flushes bound form values before callbacks and refreshes dynamic widgets after
+them. `Quit` marks the current UI context closed before destroying the window,
+so callback cleanup does not try to refresh destroyed backend widgets.
+
+Menu and dialog backend types remain private. Scroll areas similarly expose a
+single composable Rosaline widget while their canvas, scrollbars, wheel events,
+and platform-specific behavior stay internal.

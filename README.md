@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.3.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.4.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -102,7 +102,32 @@ Rosaline redraws automatically after mouse callbacks. See
 [docs/CANVAS_INPUT.md](docs/CANVAS_INPUT.md) for clicking, dragging, modifier
 keys, manual redraws, and a complete paint program.
 
-## Included in v0.3.0
+## A real image-viewer application
+
+Rosaline v0.4 combines menus, dialogs, images, and scrolling:
+
+```go
+viewer := rosaline.Image(nil)
+
+openImage := func() {
+	path, ok := rosaline.OpenFileDialog(rosaline.FileDialogOptions{
+		Title: "Open Image",
+	})
+	if !ok {
+		return
+	}
+	picture, err := rosaline.LoadImage(path)
+	if err != nil {
+		rosaline.Error("Could not open image", err.Error())
+		return
+	}
+	viewer.SetImage(picture)
+}
+```
+
+See [docs/IMAGE_VIEWER.md](docs/IMAGE_VIEWER.md) for the complete application.
+
+## Included in v0.4.0
 
 - Application windows
 - Labels and dynamic labels
@@ -116,8 +141,12 @@ keys, manual redraws, and a complete paint program.
 - A first-class canvas with lines, rectangles, circles, and text
 - Canvas clicks, pointer movement, dragging, and button-release events
 - Automatic and manually requested canvas redraws
+- Pure-Go loading and display of common image formats
+- Horizontal and vertical scroll areas
+- Native open, save, message, error, and confirmation dialogs
+- Menu bars with working keyboard shortcuts
 - Semantic colors and themes
-- Runnable hello, counter, canvas, forms, and paint examples
+- Runnable hello, counter, canvas, forms, paint, and image-viewer examples
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -130,12 +159,13 @@ CGO_ENABLED=0 go run ./examples/counter
 CGO_ENABLED=0 go run ./examples/canvas
 CGO_ENABLED=0 go run ./examples/forms
 CGO_ENABLED=0 go run ./examples/paint
+CGO_ENABLED=0 go run ./examples/imageviewer
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add radio buttons,
-general keyboard events, images, scrolling, menus, and file dialogs.
+The API is experimental until v1.0. The next milestones add timers, radio
+buttons, general keyboard events, image export, and more drawing operations.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

@@ -12,4 +12,6 @@
 // TextBox, TextArea, and CheckBox bind directly to ordinary Go variables.
 // Canvas mouse callbacks make drawing programs interactive without exposing
 // platform event types.
+// Images, scroll areas, menus, and file dialogs provide the groundwork for
+// complete desktop applications while ordinary file I/O remains normal Go.
 package rosaline

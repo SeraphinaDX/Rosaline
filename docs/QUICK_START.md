@@ -152,5 +152,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 - Run `go run ./examples/canvas` from the Rosaline source tree.
 - Make the canvas interactive with [CANVAS_INPUT.md](CANVAS_INPUT.md), then run
   `go run ./examples/paint`.
+- Build a real desktop program with [IMAGE_VIEWER.md](IMAGE_VIEWER.md), then run
+  `go run ./examples/imageviewer`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.
