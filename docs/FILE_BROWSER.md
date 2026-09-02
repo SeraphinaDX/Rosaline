@@ -1,8 +1,8 @@
 # Building a File Browser
 
-The File Browser is Rosaline v0.7.0's complete table application. It combines a
-dynamic table, filesystem data, an address box, buttons, menus, shortcuts,
-status text, folder navigation, and error dialogs.
+The File Browser is Rosaline v0.8.0's complete tree-and-table application. It
+combines a lazy folder tree, dynamic table, filesystem data, address box,
+buttons, menus, shortcuts, status text, folder navigation, and error dialogs.
 
 Run it from the Rosaline source tree:
 
@@ -52,6 +52,53 @@ table.SetRows(rows...)
 
 The row at index `n` describes the application entry at index `n`. That simple
 relationship makes selection and activation easy to understand.
+
+## Build a folder tree from paths
+
+Tree labels stay friendly while values carry complete paths:
+
+```go
+rosaline.Node(entry.Name(), rosaline.Node("Loading…").WithValue("")).
+	WithValue(filepath.Join(path, entry.Name()))
+```
+
+The temporary child gives the folder an expansion arrow. Its empty value keeps
+it harmless if the user selects it.
+
+## Load branches only when they open
+
+The application does not scan the whole filesystem at startup. `OnExpand`
+reads one directory and replaces that node's temporary child:
+
+```go
+folderTree.OnExpand(func(node *rosaline.TreeNode, expanded bool) {
+	if !expanded || node.Value() == "" {
+		return
+	}
+	children, err := folderNodes(node.Value())
+	if err != nil {
+		rosaline.Error("Could not read folder", err.Error())
+		return
+	}
+	folderTree.SetChildren(node, children...)
+})
+```
+
+This pattern is called lazy loading. It keeps launch quick and avoids reading
+folders the user never opens.
+
+Activating a real folder uses its stored path:
+
+```go
+folderTree.OnActivate(func(node *rosaline.TreeNode) {
+	if node.Value() != "" {
+		loadDirectory(node.Value())
+	}
+})
+```
+
+Double-clicking or pressing Enter in either the folder tree or contents table
+therefore reaches the same `loadDirectory` function.
 
 ## Open a selected folder
 
@@ -110,15 +157,17 @@ they live in the example instead of making Rosaline larger.
 - Add a checkbox that includes or hides dotfiles.
 - Remember the last directory in a JSON preferences file.
 - Add a second tab containing detailed information about the selected entry.
-- Add a Tree widget later for a folder sidebar.
+- Keep a path-to-node map so table navigation also highlights the matching
+  folder in the sidebar.
 
 ## Go concepts used here
 
 - structs and slices
+- tree nodes and pointers
 - filesystem paths
 - directory iteration
 - stable sorting
 - closures over shared application state
 - early returns for error handling
 - reusable functions
-
+- lazy loading

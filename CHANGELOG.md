@@ -2,6 +2,18 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.8.0
+
+- Add native trees built from simple `Node` values and child pointers.
+- Add selection, activation, expansion, sizing, and programmatic control.
+- Add safe node inspection and dynamic root or child replacement.
+- Add automatic horizontal and vertical scrollbars and native keyboard tree
+  navigation.
+- Add thorough non-visual Tree API tests, including cycle and selection safety.
+- Add a complete Trees guide with a beginner-friendly lazy-loading pattern.
+- Upgrade the File Browser with Home and Filesystem folder trees that load one
+  directory only when the user opens it.
+
 ## 0.7.0
 
 - Add native multi-column tables with beginner-friendly string headings and

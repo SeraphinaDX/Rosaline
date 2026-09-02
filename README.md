@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.7.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.8.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -222,7 +222,28 @@ Selection, keyboard activation, column sizing, dynamic replacement, and both
 scrollbars are built in. See [docs/TABLES.md](docs/TABLES.md) and the complete
 [File Browser application](docs/FILE_BROWSER.md).
 
-## Included in v0.7.0
+## Nested data with simple trees
+
+Trees use ordinary node pointers, labels, and optional application values:
+
+```go
+documents := rosaline.Node("Documents",
+	rosaline.Node("Notes.txt"),
+	rosaline.Node("Ideas.txt"),
+).Expanded()
+
+folders := rosaline.Tree(documents).
+	OnActivate(func(node *rosaline.TreeNode) {
+		fmt.Println("open", node.Value())
+	})
+```
+
+Selection, activation, expansion callbacks, dynamic children, native keyboard
+navigation, and both scrollbars are built in. See
+[docs/TREES.md](docs/TREES.md) and the upgraded
+[File Browser application](docs/FILE_BROWSER.md).
+
+## Included in v0.8.0
 
 - Application windows
 - Labels and dynamic labels
@@ -254,11 +275,15 @@ scrollbars are built in. See [docs/TABLES.md](docs/TABLES.md) and the complete
 - Native multi-column tables built from ordinary `[][]string` data
 - Table selection, activation, column sizing, dynamic rows, and two-axis
   scrolling
+- Native trees with nested nodes, labels, and application-defined values
+- Tree selection, activation, expansion callbacks, dynamic roots and children,
+  and two-axis scrolling
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
 - A complete Preferences application combining tabs, lists, form controls, and
   a live canvas preview
-- A complete File Browser using the Table API and Go's standard filesystem APIs
+- A complete File Browser using lazy folder trees, tables, and Go's standard
+  filesystem APIs
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences and File Browser applications
 - Unit tests for non-visual core behavior
@@ -282,9 +307,9 @@ CGO_ENABLED=0 go run ./examples/filebrowser
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add trees, multiple
-windows, radio buttons, general keyboard events, accessibility groundwork, and
-deeper Linux display testing.
+The API is experimental until v1.0. The next milestones add multiple windows,
+radio buttons, general keyboard events, accessibility groundwork, and deeper
+Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

@@ -87,6 +87,14 @@ and returns fresh copies to callbacks and query methods. Applications keep rich
 domain objects in their own Go structs and only convert the fields they want to
 display into table rows.
 
+Trees keep hierarchy equally explicit. Each `TreeNode` owns a label, optional
+string value, child pointers, and expansion state. Applications retain node
+pointers when they need to select or update a branch. Rosaline privately maps
+those pointers to native tree items, rejects cycles during dynamic child
+replacement, and restores a safe parent selection when a selected branch is
+removed. `SetChildren` lets applications lazy-load large trees without a
+framework-specific model or background filesystem scan.
+
 ## Canvas input and redraw
 
 Canvas mouse callbacks receive Rosaline's own `MouseEvent`; backend event types

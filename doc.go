@@ -22,4 +22,6 @@
 // scrolling, keyboard selection, activation, and programmatic item updates.
 // Tables display ordinary slices of strings under named columns with native
 // scrolling, keyboard behavior, selection, and activation.
+// Trees display nested nodes with native expansion, selection, activation,
+// dynamic child replacement, and optional application-defined values.
 package rosaline

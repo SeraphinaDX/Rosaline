@@ -26,6 +26,10 @@ func main() {
 	if err != nil {
 		workingDirectory = "."
 	}
+	homeDirectory, err := os.UserHomeDir()
+	if err != nil {
+		homeDirectory = workingDirectory
+	}
 
 	currentPath := workingDirectory
 	loadedPath := workingDirectory
@@ -39,6 +43,43 @@ func main() {
 		ColumnWidth(3, 180).
 		Height(18).
 		Expand()
+
+	folderNodes := func(path string) ([]*rosaline.TreeNode, error) {
+		directoryEntries, err := os.ReadDir(path)
+		if err != nil {
+			return nil, err
+		}
+
+		nodes := make([]*rosaline.TreeNode, 0, len(directoryEntries))
+		for _, entry := range directoryEntries {
+			if !entry.IsDir() {
+				continue
+			}
+			nodes = append(nodes,
+				rosaline.Node(entry.Name(), rosaline.Node("Loading…").WithValue("")).
+					WithValue(filepath.Join(path, entry.Name())),
+			)
+		}
+		return nodes, nil
+	}
+
+	homeChildren, _ := folderNodes(homeDirectory)
+	homeNode := rosaline.Node("Home", homeChildren...).
+		WithValue(homeDirectory).
+		Expanded()
+
+	filesystemRoot := filepath.VolumeName(homeDirectory)
+	if filesystemRoot == "" {
+		filesystemRoot = string(os.PathSeparator)
+	} else {
+		filesystemRoot += string(os.PathSeparator)
+	}
+	filesystemNode := rosaline.Node("Filesystem", rosaline.Node("Loading…").WithValue("")).
+		WithValue(filesystemRoot)
+
+	folderTree := rosaline.Tree(homeNode, filesystemNode).
+		Width(250).
+		Height(18)
 
 	var loadDirectory func(string)
 	loadDirectory = func(path string) {
@@ -132,6 +173,26 @@ func main() {
 		))
 	})
 
+	folderTree.OnSelect(func(node *rosaline.TreeNode) {
+		if node.Value() != "" {
+			status = node.Value()
+		}
+	}).OnActivate(func(node *rosaline.TreeNode) {
+		if node.Value() != "" {
+			loadDirectory(node.Value())
+		}
+	}).OnExpand(func(node *rosaline.TreeNode, expanded bool) {
+		if !expanded || node.Value() == "" {
+			return
+		}
+		children, err := folderNodes(node.Value())
+		if err != nil {
+			rosaline.Error("Could not read folder", err.Error())
+			return
+		}
+		folderTree.SetChildren(node, children...)
+	})
+
 	goUp := func() {
 		loadDirectory(filepath.Dir(loadedPath))
 	}
@@ -151,7 +212,7 @@ func main() {
 
 	rosaline.RunApp(rosaline.App{
 		Title:   "Rosaline File Browser",
-		Width:   940,
+		Width:   1120,
 		Height:  620,
 		Padding: 12,
 		Menu: rosaline.MenuBar(
@@ -165,7 +226,7 @@ func main() {
 			),
 			rosaline.Menu("Help",
 				rosaline.MenuItem("About", func() {
-					rosaline.Message("About", "File Browser built with Rosaline v0.7.0")
+					rosaline.Message("About", "File Browser built with Rosaline v0.8.0")
 				}),
 			),
 		),
@@ -179,7 +240,16 @@ func main() {
 					Width(72).
 					OnSubmit(loadDirectory),
 			).Gap(8),
-			table,
+			rosaline.Row(
+				rosaline.Column(
+					rosaline.Label("Folders"),
+					folderTree,
+				).Gap(6),
+				rosaline.Column(
+					rosaline.Label("Contents"),
+					table,
+				).Gap(6).Expand(),
+			).Gap(12).Expand(),
 			rosaline.LabelFunc(func() string { return status }),
 		).Gap(10).Expand(),
 	})

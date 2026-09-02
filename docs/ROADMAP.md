@@ -55,7 +55,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Lists
 - [x] Tabs
 - [x] Tables
-- [ ] Trees
+- [x] Trees
 - [ ] Multiple windows
 - [ ] Custom widgets
 - [ ] Accessibility groundwork

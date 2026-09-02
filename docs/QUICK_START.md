@@ -158,5 +158,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
   then run `go run ./examples/preferences`.
 - Display structured data with [TABLES.md](TABLES.md), then build a real
   filesystem application with [FILE_BROWSER.md](FILE_BROWSER.md).
+- Display nested data with [TREES.md](TREES.md), including selection,
+  activation, expansion, and lazy loading.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.
