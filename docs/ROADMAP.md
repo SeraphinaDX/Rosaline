@@ -81,6 +81,16 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Cross-platform Primary shortcuts
 - [x] Complete Keyboard Garden application
 
+## v0.12 — Background work
+
+- [x] Window-owned background tasks
+- [x] Standard Go context cancellation
+- [x] Progress and status reporting
+- [x] Safe GUI-thread result posting
+- [x] Completion and error callbacks
+- [x] Automatic close and reopen lifecycle handling
+- [x] Complete Background Bloom application
+
 ## Documentation applications
 
 Each longer tutorial will explain why the program is structured as it is:
@@ -93,4 +103,5 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] File browser
 - [x] Task settings
 - [x] Keyboard garden
+- [x] Background image generator
 - [ ] Small canvas game

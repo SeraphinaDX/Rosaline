@@ -50,8 +50,20 @@ code.
 labels after Rosaline callbacks. This is enough for early applications without
 inventing a new language or reflection-based binding system.
 
-Later milestones will add a UI-safe scheduling method for goroutines and more
-granular invalidation.
+## Background-work boundary
+
+Each window may own a group of `Task` values. Task work runs in ordinary Go
+goroutines, but those goroutines never call the private backend. Progress,
+posted functions, and completion errors enter a buffered per-run queue. A
+small window-owned event-loop callback drains that queue only while work is
+active, invokes application callbacks on the GUI thread, and performs one
+coalesced refresh.
+
+Each run has a generation and each task group has a window-lifetime signal.
+Closing a window cancels the task context, closes that lifetime, removes the
+event-loop callback, and ignores queued events from the old generation. A
+worker that cooperates with cancellation exits promptly; even a misbehaving
+worker cannot touch destroyed backend objects through Rosaline's reporter.
 
 ## Form values
 

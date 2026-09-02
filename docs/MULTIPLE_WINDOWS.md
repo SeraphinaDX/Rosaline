@@ -2,7 +2,8 @@
 
 Rosaline applications can open secondary windows without creating another
 event loop. A `Window` keeps its own content, title, menu, focus order, theme,
-and timers while sharing ordinary Go state with the rest of the application.
+timers, and tasks while sharing ordinary Go state with the rest of the
+application.
 
 ## Smallest complete example
 
@@ -76,8 +77,8 @@ if settingsWindow.IsOpen() {
 
 ## Closing and reopening
 
-`Close` destroys the native window and safely detaches its focus controls and
-timers:
+`Close` destroys the native window, safely detaches its focus controls and
+timers, and cancels its active tasks:
 
 ```go
 settingsWindow.Close()
@@ -156,7 +157,7 @@ editor.SetTitle("Editor — Unsaved")
 
 An empty title uses `Rosaline`.
 
-## Window-specific menus, themes, and timers
+## Window-specific menus, themes, timers, and tasks
 
 `WindowOptions` deliberately resembles `App`:
 
@@ -169,6 +170,7 @@ tool := rosaline.NewWindow(rosaline.WindowOptions{
 	Theme:   customTheme,
 	Menu:    toolMenu,
 	Timers:  []*rosaline.Timer{toolTimer},
+	Tasks:   []*rosaline.Task{toolTask},
 	Content: toolContent,
 })
 ```
@@ -176,7 +178,9 @@ tool := rosaline.NewWindow(rosaline.WindowOptions{
 An omitted theme inherits the parent or primary application theme. Shortcuts
 in a secondary window's menu belong to that window. Its timers begin when it
 opens, detach when it closes, and resume on reopening when they are still in a
-running state.
+running state. Active background tasks are cancelled on close; an auto-start
+task begins again when its window reopens. See
+[Background Tasks](BACKGROUND_TASKS.md) for safe worker-to-interface updates.
 
 ## Closing the whole application
 
@@ -195,6 +199,8 @@ window buttons should call their own window's `Close` method instead.
   each location and let them share ordinary Go variables instead.
 - Put a timer in only one open window at a time; one `Timer` cannot belong to
   two window contexts simultaneously.
+- Give a background `Task` to only one open window at a time. Create separate
+  tasks when windows need independent work.
 
 ## Complete application
 

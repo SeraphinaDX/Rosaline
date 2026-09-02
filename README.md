@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.11.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.12.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -183,6 +183,36 @@ Use `After` for one delayed callback and `Animate` for a frame-rate-based
 canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 [docs/ANIMATION.md](docs/ANIMATION.md).
 
+## Slow work without a frozen window
+
+Background tasks do ordinary Go work in a goroutine while Rosaline safely
+delivers progress and results to the GUI thread:
+
+```go
+progress := 0.0
+
+task := rosaline.Background(func(ctx context.Context, report *rosaline.TaskReporter) error {
+	for step := 1; step <= 100; step++ {
+		if !report.Report(float64(step), "Working...") {
+			return ctx.Err()
+		}
+	}
+	return nil
+}).OnProgress(func(update rosaline.TaskProgress) {
+	progress = update.Percent
+}).AutoStart()
+
+rosaline.RunApp(rosaline.App{
+	Tasks:   []*rosaline.Task{task},
+	Content: rosaline.ProgressBar(&progress),
+})
+```
+
+Tasks support cancellation, reusable starts, posted result callbacks, normal Go
+errors, and automatic window-lifetime cleanup. See
+[Background Tasks](docs/BACKGROUND_TASKS.md) and the complete
+[Background Bloom application](docs/BACKGROUND_BLOOM_APPLICATION.md).
+
 ## Tabs and selectable lists
 
 Larger applications can group related pages and present scrollable choices
@@ -328,7 +358,7 @@ handlers observe input without breaking normal text editing. See
 [Keyboard Input and Shortcuts](docs/KEYBOARD_INPUT.md) and the complete
 [Keyboard Garden application](docs/KEYBOARD_GARDEN_APPLICATION.md).
 
-## Included in v0.11.0
+## Included in v0.12.0
 
 - Application windows
 - Labels and dynamic labels
@@ -366,6 +396,9 @@ handlers observe input without breaking normal text editing. See
 - Repeating and one-shot application timers
 - Start, stop, restart, and running-state timer controls
 - Frame-rate-based canvas animation
+- Window-owned background tasks with standard Go context cancellation
+- GUI-thread progress, completion, and posted result callbacks
+- Safe task restart, auto-start, panic conversion, and late-callback cleanup
 - Native tabbed interfaces with selection callbacks and programmatic selection
 - Scrollable single-selection lists with selection and activation callbacks
 - Dynamic list replacement and safe programmatic selection
@@ -395,9 +428,11 @@ handlers observe input without breaking normal text editing. See
   state, validation, dynamic choices, and both progress modes
 - A complete Keyboard Garden combining canvas input, modifiers, releases,
   standalone shortcuts, drawing, dialogs, and PNG export
+- A complete Background Bloom combining responsive image generation, progress,
+  cancellation, result posting, shortcuts, dialogs, and PNG export
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
-  applications, Task Settings, and Keyboard Garden
+  applications, Task Settings, Keyboard Garden, and Background Bloom
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -418,6 +453,7 @@ CGO_ENABLED=0 go run ./examples/filebrowser
 CGO_ENABLED=0 go run ./examples/windows
 CGO_ENABLED=0 go run ./examples/tasksettings
 CGO_ENABLED=0 go run ./examples/keyboard
+CGO_ENABLED=0 go run ./examples/background
 ```
 
 ## Project status

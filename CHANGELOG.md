@@ -2,6 +2,28 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.12.0
+
+- Add window-owned `Task` background work with the beginner-friendly
+  `Background` constructor.
+- Add standard `context.Context` cancellation and reusable `Start`, `Cancel`,
+  `Running`, and `AutoStart` controls.
+- Add percentage and message updates through `TaskReporter.Report` and
+  GUI-thread `OnProgress` callbacks.
+- Add `TaskReporter.Post` for safely transferring arbitrary Go results back to
+  application state and mounted widgets.
+- Add GUI-thread `OnDone` error handling, panic-to-error conversion, progress
+  inspection, and automatic dynamic-widget refresh.
+- Tie every task to `App.Tasks` or `WindowOptions.Tasks`, cancel it on window
+  close, and discard callbacks from an old or closed window lifetime.
+- Poll background queues only while work is active and never call the window
+  backend from worker goroutines.
+- Add thorough non-visual tests for progress, posting order, cancellation,
+  panics, ownership, remounting, and late-callback safety.
+- Add a complete background-work guide and Background Bloom application
+  combining responsive image generation, progress, cancellation, shortcuts,
+  dialogs, image display, and PNG export.
+
 ## 0.11.0
 
 - Add backend-neutral `Key`, `KeyEvent`, and friendly constants for common

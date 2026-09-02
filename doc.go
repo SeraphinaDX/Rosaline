@@ -32,4 +32,6 @@
 // KeyEvent supports window-wide and focused-canvas keyboard input. Standalone
 // shortcuts use familiar names and a cross-platform Primary modifier without
 // requiring a menu or exposing backend key values.
+// Background creates window-owned tasks with standard context cancellation,
+// progress reports, completion callbacks, and safe GUI-thread result posting.
 package rosaline

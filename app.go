@@ -17,6 +17,7 @@ type App struct {
 	Theme     Theme
 	Menu      *AppMenuBar
 	Timers    []*Timer
+	Tasks     []*Task
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
@@ -35,7 +36,7 @@ func RunApp(app App) {
 	options := (&Window{options: WindowOptions{
 		Title: app.Title, Width: app.Width, Height: app.Height,
 		Padding: app.Padding, Theme: app.Theme, Menu: app.Menu,
-		Timers: app.Timers, Shortcuts: app.Shortcuts,
+		Timers: app.Timers, Tasks: app.Tasks, Shortcuts: app.Shortcuts,
 		OnKeyDown: app.OnKeyDown, OnKeyUp: app.OnKeyUp, Content: app.Content,
 	}}).resolvedOptions()
 
@@ -53,10 +54,13 @@ func RunApp(app App) {
 	activeContext = ctx
 	mountedTimers := mountTimers(ctx, options.Timers)
 	mainWindowHandle.mountedTimers = mountedTimers
+	mountedTasks := mountTasks(ctx, options.Tasks)
+	mainWindowHandle.mountedTasks = mountedTasks
 	defer func() {
 		session.closing = true
 		session.closeSecondaryWindows(false, false)
 		ctx.abandon()
+		mountedTasks.unmount()
 		for _, timer := range mountedTimers {
 			timer.unmount(ctx)
 		}
@@ -65,6 +69,7 @@ func RunApp(app App) {
 		mainWindowHandle.ctx = nil
 		mainWindowHandle.native = nil
 		mainWindowHandle.mountedTimers = nil
+		mainWindowHandle.mountedTasks = nil
 		activeSession = nil
 		activeContext = nil
 	}()
@@ -80,6 +85,7 @@ func RunApp(app App) {
 	for _, timer := range mountedTimers {
 		timer.begin()
 	}
+	mountedTasks.begin()
 	tk.App.Wait()
 }
 
@@ -92,6 +98,7 @@ func Quit() {
 	activeSession.closeSecondaryWindows(true, true)
 	if activeSession.main != nil && activeSession.main.ctx != nil {
 		ctx := activeSession.main.ctx
+		activeSession.main.mountedTasks.unmount()
 		for _, timer := range activeSession.main.mountedTimers {
 			timer.unmount(ctx)
 		}

@@ -123,8 +123,9 @@ later instead.
 ### Calling timer methods from a goroutine
 
 Call `Start`, `Stop`, and `Restart` from Rosaline callbacks. Background work and
-thread-safe delivery back to the GUI will get a dedicated API in a later
-release.
+thread-safe delivery back to the GUI use
+[`Background`](BACKGROUND_TASKS.md). A task may safely post a result to a timer
+or other interface state through its reporter.
 
 ## Go concepts used here
 

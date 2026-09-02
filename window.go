@@ -18,6 +18,7 @@ type WindowOptions struct {
 	Theme     Theme
 	Menu      *AppMenuBar
 	Timers    []*Timer
+	Tasks     []*Task
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
@@ -36,6 +37,7 @@ type Window struct {
 	ctx           *mountContext
 	native        *tk.Window
 	mountedTimers []*Timer
+	mountedTasks  *taskGroup
 }
 
 type applicationSession struct {
@@ -205,6 +207,7 @@ func (w *Window) mount() {
 
 	w.ctx = &mountContext{theme: options.Theme, session: w.session, owner: w}
 	w.mountedTimers = mountTimers(w.ctx, options.Timers)
+	w.mountedTasks = mountTasks(w.ctx, options.Tasks)
 	mountWindowContent(w.ctx, w.native, options)
 	tk.WmProtocol(w.native, tk.WM_DELETE_WINDOW, w.Close)
 	w.native.Center()
@@ -215,6 +218,7 @@ func (w *Window) mount() {
 	for _, timer := range w.mountedTimers {
 		timer.begin()
 	}
+	w.mountedTasks.begin()
 }
 
 func (w *Window) close(destroy, notify bool) {
@@ -238,6 +242,7 @@ func (w *Window) close(destroy, notify bool) {
 	}
 
 	if destroy {
+		w.mountedTasks.unmount()
 		for _, timer := range w.mountedTimers {
 			timer.unmount(w.ctx)
 		}
@@ -248,6 +253,7 @@ func (w *Window) close(destroy, notify bool) {
 		if w.ctx != nil {
 			w.ctx.abandon()
 		}
+		w.mountedTasks.unmount()
 		for _, timer := range w.mountedTimers {
 			timer.unmount(w.ctx)
 		}
@@ -261,6 +267,7 @@ func (w *Window) close(destroy, notify bool) {
 	w.native = nil
 	w.ctx = nil
 	w.mountedTimers = nil
+	w.mountedTasks = nil
 	w.session = nil
 	if notify && w.options.OnClose != nil {
 		w.options.OnClose()

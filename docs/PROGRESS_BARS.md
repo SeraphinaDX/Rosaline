@@ -83,21 +83,19 @@ not participate in keyboard focus order.
 
 ## Updating during real work
 
-Button and timer callbacks may assign to the bound variable normally. Rosaline
-refreshes the bar after those callbacks:
+Use a background task when expensive work would freeze the window. Its
+GUI-thread progress callback can update the bound variable normally:
 
 ```go
-progress := 0.0
-
-timer := rosaline.Every(100*time.Millisecond, func() {
-	progress++
+task.OnProgress(func(update rosaline.TaskProgress) {
+	progress = update.Percent
 })
 ```
 
-Keep expensive work out of a UI callback. Rosaline's current public API does
-not yet offer a general goroutine-to-UI scheduling method, so do not update
-widgets directly from a goroutine. For operations that can be divided into
-small quick steps, an application timer is a safe fit.
+Keep expensive work out of UI callbacks and never update a progress bar
+directly from a goroutine. See [Background Tasks](BACKGROUND_TASKS.md) for
+reporting, cancellation, result posting, and a complete program. A timer remains
+a good fit for small, quick steps that already belong on the GUI event loop.
 
 ## Common mistakes
 
