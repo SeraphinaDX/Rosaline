@@ -113,15 +113,21 @@ func mountWindowContent(ctx *mountContext, parent *tk.Window, options WindowOpti
 	}
 	mountKeyboard(ctx, parent, options.OnKeyDown, options.OnKeyUp, options.Shortcuts)
 	root := options.Content.mount(ctx, parent)
-	packOptions := []tk.Opt{
-		tk.Fill("both"),
-		tk.Padx(options.Padding),
-		tk.Pady(options.Padding),
-	}
-	if root.expandX || root.expandY {
-		packOptions = append(packOptions, tk.Expand(true))
-	}
+	packOptions := rootPackOptions(root, options.Padding)
 	tk.Pack(append([]tk.Opt{root.window}, packOptions...)...)
 	ctx.refresh()
 	ctx.installFocusTraversal()
+}
+
+func rootPackOptions(root mountedWidget, padding int) []tk.Opt {
+	options := []tk.Opt{tk.Padx(padding), tk.Pady(padding)}
+	if root.aligned {
+		options = append(options, tk.Anchor(stickyAnchor(root.sticky)), tk.Fill(stickyFill(root.sticky)))
+	} else {
+		options = append(options, tk.Fill("both"))
+	}
+	if root.expandX || root.expandY {
+		options = append(options, tk.Expand(true))
+	}
+	return options
 }

@@ -171,5 +171,8 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 - Add window handlers, focused canvas keys, and standalone shortcuts with
   [KEYBOARD_INPUT.md](KEYBOARD_INPUT.md), then run
   `go run ./examples/keyboard`.
+- Build adaptive grids, stacks, cards, alignment, and flexible spacing with
+  [LAYOUT_AND_PRESENTATION.md](LAYOUT_AND_PRESENTATION.md), then run
+  `go run ./examples/calculator`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

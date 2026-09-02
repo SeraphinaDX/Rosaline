@@ -2,6 +2,28 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.13.0
+
+- Add beginner-friendly `Grid` layouts with automatic rows, equal-width
+  columns, gaps, padding, and optional equal-row expansion.
+- Add `Stack` for layered interfaces, with later widgets displayed above
+  earlier backgrounds.
+- Add `Align` and `Center` with start, center, end, and stretch positions that
+  work in windows, rows, columns, grids, and stacks without opaque wrappers.
+- Add adaptive `Spring` space alongside the existing fixed `Spacer`.
+- Add horizontal or vertical themed `Separator` widgets with configurable
+  thickness.
+- Add semantic `Card` surfaces with theme borders, padding, and expansion.
+- Add `Size` and `MinSize` wrappers for preferred and minimum pixel dimensions.
+- Add label `FontSize`, `Bold`, and `TextAlign` presentation methods.
+- Correct row and column layout expansion to respect horizontal and vertical
+  axes independently.
+- Add non-visual tests for layout defaults, normalization, alignment metadata,
+  axis behavior, label presentation, sizing, cards, stacks, and separators.
+- Add a complete layout guide and a polished Calculator application combining
+  every major presentation primitive with keyboard input and tested arithmetic
+  logic.
+
 ## 0.12.0
 
 - Add window-owned `Task` background work with the beginner-friendly

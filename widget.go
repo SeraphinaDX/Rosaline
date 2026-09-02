@@ -15,6 +15,8 @@ type mountedWidget struct {
 	window  *tk.Window
 	expandX bool
 	expandY bool
+	sticky  string
+	aligned bool
 }
 
 type focusableWidget struct {

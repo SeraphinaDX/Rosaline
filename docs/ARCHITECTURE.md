@@ -24,6 +24,23 @@ their lifetime and layout. Canvas drawing is direct: an application receives a
 
 This combination supports both ordinary utilities and drawing-heavy programs.
 
+## Layout metadata
+
+Rows, columns, grids, and stacks all mount the same private `mountedWidget`
+description. Expansion stays separate on the horizontal and vertical axes, so
+a widget can fill a column's width without consuming its remaining height.
+
+Alignment is metadata rather than another native container. The receiving
+layout translates start, center, end, and stretch into its geometry manager's
+own positioning rules. This matters especially for `Stack`: a centered card
+can sit above a canvas without an opaque alignment frame hiding the canvas.
+
+`Card`, `Size`, and `MinSize` remain normal wrapper widgets. Cards temporarily
+use the semantic surface as their children's layout background during mount;
+they do not expose backend colors or handles. Preferred sizing uses a
+non-propagating positioned child, while minimum sizing lets natural content
+grow beyond the requested floor.
+
 ## One drawing engine
 
 Visible canvas widgets and off-screen pictures share one pure-Go software

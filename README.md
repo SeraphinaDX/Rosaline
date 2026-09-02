@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.12.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.13.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -81,6 +81,37 @@ rosaline.Run(
 
 See [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md),
 [docs/CHECKBOX.md](docs/CHECKBOX.md), and [docs/FORMS.md](docs/FORMS.md).
+
+## Layouts that stay readable
+
+Build equal-cell grids, layered interfaces, centered cards, and adaptive rows
+from ordinary widgets:
+
+```go
+panel := rosaline.Card(
+	rosaline.Column(
+		rosaline.Label("Quick actions").FontSize(24).Bold(),
+		rosaline.Separator(),
+		rosaline.Grid(2,
+			rosaline.Button("Open", open),
+			rosaline.Button("Save", save).Primary(),
+		).Gap(8),
+		rosaline.Row(
+			rosaline.Label("Ready"),
+			rosaline.Spring(),
+			rosaline.Label("2 actions"),
+		),
+	).Gap(12),
+)
+
+rosaline.Run(
+	rosaline.Stack(background, rosaline.Center(panel)).Expand(),
+)
+```
+
+`Align`, `Size`, and `MinSize` cover positioning and sizing without manual
+coordinates. See [Layout and Presentation](docs/LAYOUT_AND_PRESENTATION.md) and
+the complete [Calculator application](docs/CALCULATOR_APPLICATION.md).
 
 ## An interactive canvas
 
@@ -358,12 +389,16 @@ handlers observe input without breaking normal text editing. See
 [Keyboard Input and Shortcuts](docs/KEYBOARD_INPUT.md) and the complete
 [Keyboard Garden application](docs/KEYBOARD_GARDEN_APPLICATION.md).
 
-## Included in v0.12.0
+## Included in v0.13.0
 
 - Application windows
-- Labels and dynamic labels
+- Labels and dynamic labels with font size, bold, and text alignment
 - Buttons and message dialogs
 - Rows, columns, spacing, padding, and expansion
+- Equal-column grids with automatic rows, gaps, padding, and expansion
+- Layered stacks with metadata-driven alignment and centered overlays
+- Adaptive springs, themed separators and cards, and preferred or minimum
+  sizing wrappers
 - Simple state values
 - Single-line and multiline text input
 - Password display, placeholders, change events, and Enter submission
@@ -430,9 +465,12 @@ handlers observe input without breaking normal text editing. See
   standalone shortcuts, drawing, dialogs, and PNG export
 - A complete Background Bloom combining responsive image generation, progress,
   cancellation, result posting, shortcuts, dialogs, and PNG export
+- A complete Calculator combining grids, stacks, cards, alignment, dynamic
+  typography, adaptive spacing, keyboard input, shortcuts, and tested logic
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
-  applications, Task Settings, Keyboard Garden, and Background Bloom
+  applications, Task Settings, Keyboard Garden, Background Bloom, and the
+  Calculator
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -454,6 +492,7 @@ CGO_ENABLED=0 go run ./examples/windows
 CGO_ENABLED=0 go run ./examples/tasksettings
 CGO_ENABLED=0 go run ./examples/keyboard
 CGO_ENABLED=0 go run ./examples/background
+CGO_ENABLED=0 go run ./examples/calculator
 ```
 
 ## Project status

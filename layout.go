@@ -75,28 +75,43 @@ func (b *Box) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 		tk.Pady(b.padding),
 	)
 	side := "top"
-	fill := "x"
 	if b.direction == horizontal {
 		side = "left"
-		fill = "y"
 	}
 	halfGap := b.gap / 2
 	for _, child := range b.children {
 		mounted := child.mount(ctx, inner.Window)
+		anchor, fill, expand := boxChildLayout(b.direction, mounted)
 		opts := []tk.Opt{
 			tk.Side(side),
-			tk.Anchor("nw"),
+			tk.Anchor(anchor),
 			tk.Padx(halfGap),
 			tk.Pady(halfGap),
+			tk.Fill(fill),
 		}
-		if mounted.expandX || mounted.expandY {
-			opts = append(opts, tk.Fill("both"), tk.Expand(true))
-		} else {
-			opts = append(opts, tk.Fill(fill))
+		if expand {
+			opts = append(opts, tk.Expand(true))
 		}
 		tk.Pack(append([]tk.Opt{mounted.window}, opts...)...)
 	}
 	return mountedWidget{window: frame.Window, expandX: b.expand, expandY: b.expand}
+}
+
+func boxChildLayout(direction direction, mounted mountedWidget) (anchor, fill string, expand bool) {
+	if mounted.aligned {
+		return stickyAnchor(mounted.sticky), stickyFill(mounted.sticky),
+			(direction == horizontal && mounted.expandX) || (direction == vertical && mounted.expandY)
+	}
+	if direction == horizontal {
+		if mounted.expandX {
+			return "nw", "both", true
+		}
+		return "nw", "y", false
+	}
+	if mounted.expandY {
+		return "nw", "both", true
+	}
+	return "nw", "x", false
 }
 
 type spacerWidget struct {

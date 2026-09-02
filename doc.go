@@ -34,4 +34,6 @@
 // requiring a menu or exposing backend key values.
 // Background creates window-owned tasks with standard context cancellation,
 // progress reports, completion callbacks, and safe GUI-thread result posting.
+// Grid, Stack, Align, Center, Spring, Separator, Card, Size, and MinSize build
+// polished adaptive layouts while remaining ordinary composable widgets.
 package rosaline

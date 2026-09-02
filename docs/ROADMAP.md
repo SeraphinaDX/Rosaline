@@ -91,11 +91,22 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Automatic close and reopen lifecycle handling
 - [x] Complete Background Bloom application
 
+## v0.13 — Layout and presentation
+
+- [x] Automatic equal-column grids
+- [x] Layered stacks
+- [x] Alignment and centering
+- [x] Flexible spring spacing
+- [x] Themed cards and separators
+- [x] Preferred and minimum sizing
+- [x] Label typography and text alignment
+- [x] Complete Calculator application
+
 ## Documentation applications
 
 Each longer tutorial will explain why the program is structured as it is:
 
-- [ ] Calculator
+- [x] Calculator
 - [ ] Notepad
 - [x] Image viewer
 - [x] Paint program
