@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.9.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.10.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -267,7 +267,39 @@ share normal Go state, own menus and timers, and form safe parent-child
 relationships. See [docs/MULTIPLE_WINDOWS.md](docs/MULTIPLE_WINDOWS.md) and the
 complete [Project Desk example](examples/windows/main.go).
 
-## Included in v0.9.0
+## Everyday controls with ordinary Go values
+
+Radio groups, combo boxes, sliders, and progress bars bind directly to normal
+Go variables:
+
+```go
+priority := "normal"
+category := "Documentation"
+completion := 35.0
+
+rosaline.Run(
+	rosaline.Column(
+		rosaline.ComboBox(&category, "Documentation", "Development"),
+		rosaline.RadioGroup(&priority,
+			rosaline.Choice("Low", "low"),
+			rosaline.Choice("Normal", "normal"),
+			rosaline.Choice("High", "high"),
+		).Horizontal(),
+		rosaline.Slider(&completion, 0, 100).Step(5),
+		rosaline.ProgressBar(&completion),
+	)
+)
+```
+
+The slider and progress bar share one pointer, so they stay synchronized after
+Rosaline events without a binding language. Options and choices can be replaced
+while the application is running. Progress bars also support an indeterminate
+busy mode. See [Radio Groups](docs/RADIO_GROUPS.md),
+[Combo Boxes](docs/COMBO_BOXES.md), [Sliders](docs/SLIDERS.md),
+[Progress Bars](docs/PROGRESS_BARS.md), and the complete
+[Task Settings application](docs/TASK_SETTINGS_APPLICATION.md).
+
+## Included in v0.10.0
 
 - Application windows
 - Labels and dynamic labels
@@ -277,6 +309,14 @@ complete [Project Desk example](examples/windows/main.go).
 - Single-line and multiline text input
 - Password display, placeholders, change events, and Enter submission
 - Checkboxes bound to Go Boolean variables
+- Radio groups with separate labels and values, vertical or horizontal layout,
+  callbacks, programmatic selection, and dynamic choices
+- Read-only combo boxes with callbacks, programmatic selection, width control,
+  and dynamic options
+- Numeric sliders with safe ranges, optional steps, horizontal or vertical
+  direction, focus, callbacks, and programmatic control
+- Determinate and indeterminate progress bars with custom maximums, size,
+  direction, and start/stop controls
 - Tab and Shift+Tab keyboard navigation
 - A first-class canvas with lines, rectangles, circles, and text
 - Reusable paths with straight, quadratic, and cubic Bézier sections
@@ -317,9 +357,11 @@ complete [Project Desk example](examples/windows/main.go).
   filesystem APIs
 - A complete Project Desk application combining an editor, live child preview,
   About window, shared state, menus, and dynamic titles
+- A complete Task Settings application combining everyday controls, shared Go
+  state, validation, dynamic choices, and both progress modes
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
-  applications
+  applications and Task Settings
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -338,13 +380,14 @@ CGO_ENABLED=0 go run ./examples/animation
 CGO_ENABLED=0 go run ./examples/preferences
 CGO_ENABLED=0 go run ./examples/filebrowser
 CGO_ENABLED=0 go run ./examples/windows
+CGO_ENABLED=0 go run ./examples/tasksettings
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add radio buttons,
-general keyboard events, accessibility groundwork, custom widgets, and deeper
-Linux display testing.
+The API is experimental until v1.0. The next milestones add general keyboard
+events, accessibility groundwork, custom widgets, and deeper Linux display
+testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

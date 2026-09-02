@@ -17,7 +17,7 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 - [x] TextBox and TextArea
 - [x] CheckBox
-- [ ] RadioButton
+- [x] Radio groups
 - [ ] Keyboard events and shortcuts
 - [x] Focus and tab navigation
 - [x] Basic validation patterns and beginner-friendly form documentation
@@ -62,6 +62,16 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [ ] HiDPI and multi-monitor test suite
 - [ ] Native Wayland backend investigation
 
+## v0.10 — Everyday controls
+
+- [x] Radio groups
+- [x] Read-only combo boxes
+- [x] Numeric sliders
+- [x] Determinate progress bars
+- [x] Indeterminate busy progress
+- [x] Dynamic options and choices
+- [x] Complete Task Settings application
+
 ## Documentation applications
 
 Each longer tutorial will explain why the program is structured as it is:
@@ -72,4 +82,5 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] Paint program
 - [x] Preferences application
 - [x] File browser
+- [x] Task settings
 - [ ] Small canvas game

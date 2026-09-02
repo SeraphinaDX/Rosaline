@@ -55,17 +55,22 @@ granular invalidation.
 
 ## Form values
 
-Text boxes, text areas, and checkboxes bind to pointers to ordinary Go
-variables. Rosaline flushes the latest control values before a button callback
-and refreshes controls after Rosaline events. This gives beginners predictable
-two-way values without reflection, generated code, or a separate binding
-language.
+Text boxes, text areas, checkboxes, radio groups, combo boxes, sliders, and
+progress bars bind to pointers to ordinary Go variables. Rosaline flushes the
+latest control values before a button callback and refreshes controls after
+Rosaline events. This gives beginners predictable two-way values without
+reflection, generated code, or a separate binding language. Two controls can
+share one pointer—for example, a slider and progress bar—while application
+logic continues to read and write a normal `float64`.
 
 Focus order follows the order in which interactive widgets are mounted.
 Rosaline handles Tab and Shift+Tab traversal privately so application code does
 not need platform event handling for normal forms. Tab pages add a dynamic
 visibility condition to their child controls, so keyboard traversal skips
 controls on inactive pages without unmounting or recreating their Go state.
+Radio groups reserve one logical focus slot even though they contain several
+native buttons. Replacing their choices updates that slot to the selected
+button, so dynamic groups remain predictable in Tab traversal.
 
 ## Larger interfaces
 

@@ -2,6 +2,26 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.10.0
+
+- Add pointer-bound `RadioGroup` controls with separate visible labels and
+  stored values.
+- Add horizontal and vertical radio layouts, callbacks, initial focus,
+  programmatic selection, and dynamic choice replacement.
+- Treat each radio group as one logical Tab stop while preserving native
+  keyboard movement between its choices.
+- Add read-only pointer-bound `ComboBox` controls with callbacks, width,
+  initial focus, programmatic selection, and dynamic option replacement.
+- Add pointer-bound numeric `Slider` controls with normalized ranges, optional
+  steps, sizing, direction, focus, callbacks, and programmatic control.
+- Add determinate and indeterminate `ProgressBar` controls with custom
+  maximums, sizing, direction, busy animation, and start/stop controls.
+- Add focused non-visual tests for every new control and dynamic focus-slot
+  support for controls whose native children can be replaced.
+- Add four complete feature guides and a Task Settings application tutorial
+  combining shared Go values, validation, changing choices, and both progress
+  modes.
+
 ## 0.9.0
 
 - Add reusable secondary windows with `NewWindow` and `WindowOptions`.

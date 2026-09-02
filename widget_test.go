@@ -56,6 +56,27 @@ func TestFocusConditionTracksChangingVisibility(t *testing.T) {
 	}
 }
 
+func TestFocusableSlotCanFollowAReplacedNativeControl(t *testing.T) {
+	first := &tk.Window{}
+	replacement := &tk.Window{}
+	last := &tk.Window{}
+	ctx := mountContext{}
+	ctx.addFocusable(first, false)
+	slot := ctx.addFocusable(nil, false)
+	ctx.addFocusable(last, false)
+
+	if got := ctx.relativeFocus(0, 1); got != last {
+		t.Fatalf("empty slot returned %p, want last widget %p", got, last)
+	}
+	ctx.updateFocusable(slot, replacement)
+	if got := ctx.relativeFocus(0, 1); got != replacement {
+		t.Fatalf("updated slot returned %p, want replacement %p", got, replacement)
+	}
+
+	ctx.updateFocusable(-1, first)
+	ctx.updateFocusable(99, first)
+}
+
 func TestMountContextReleasesControlsInReverseOrder(t *testing.T) {
 	ctx := mountContext{}
 	var order []string

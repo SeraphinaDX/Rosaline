@@ -163,5 +163,10 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 - Add reusable tool and child windows with
   [MULTIPLE_WINDOWS.md](MULTIPLE_WINDOWS.md), then run
   `go run ./examples/windows`.
+- Add everyday choices and numeric input with
+  [RADIO_GROUPS.md](RADIO_GROUPS.md), [COMBO_BOXES.md](COMBO_BOXES.md), and
+  [SLIDERS.md](SLIDERS.md). Display work with
+  [PROGRESS_BARS.md](PROGRESS_BARS.md), then run
+  `go run ./examples/tasksettings`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

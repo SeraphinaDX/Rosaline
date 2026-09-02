@@ -102,16 +102,24 @@ func (c *mountContext) abandon() {
 	c.initialFocus = nil
 }
 
-func (c *mountContext) addFocusable(window *tk.Window, initial bool) {
+func (c *mountContext) addFocusable(window *tk.Window, initial bool) int {
 	focusable := focusableWidget{window: window, visible: c.focusCondition}
 	c.focusables = append(c.focusables, focusable)
 	if initial && c.initialFocus == nil && focusable.isVisible() {
 		c.initialFocus = window
 	}
+	return len(c.focusables) - 1
 }
 
 func (f focusableWidget) isVisible() bool {
-	return f.visible == nil || f.visible()
+	return f.window != nil && (f.visible == nil || f.visible())
+}
+
+func (c *mountContext) updateFocusable(index int, window *tk.Window) {
+	if c == nil || index < 0 || index >= len(c.focusables) {
+		return
+	}
+	c.focusables[index].window = window
 }
 
 func (c *mountContext) withFocusCondition(condition func() bool, mount func()) {
@@ -150,24 +158,30 @@ func (c *mountContext) installFocusTraversal() {
 	}
 
 	for i, focusable := range c.focusables {
-		index := i
-		forward := tk.Command(func(event *tk.Event) {
-			c.flush()
-			if next := c.relativeFocus(index, 1); next != nil {
-				tk.Focus(next)
-			}
-			event.SetReturnCodeBreak()
-		})
-		backward := tk.Command(func(event *tk.Event) {
-			c.flush()
-			if previous := c.relativeFocus(index, -1); previous != nil {
-				tk.Focus(previous)
-			}
-			event.SetReturnCodeBreak()
-		})
-
-		tk.Bind(focusable.window, "<Tab>", forward)
-		tk.Bind(focusable.window, "<Shift-Key-Tab>", backward)
-		tk.Bind(focusable.window, "<ISO_Left_Tab>", backward)
+		c.bindFocusTraversal(focusable.window, i)
 	}
+}
+
+func (c *mountContext) bindFocusTraversal(window *tk.Window, index int) {
+	if c == nil || window == nil {
+		return
+	}
+	forward := tk.Command(func(event *tk.Event) {
+		c.flush()
+		if next := c.relativeFocus(index, 1); next != nil {
+			tk.Focus(next)
+		}
+		event.SetReturnCodeBreak()
+	})
+	backward := tk.Command(func(event *tk.Event) {
+		c.flush()
+		if previous := c.relativeFocus(index, -1); previous != nil {
+			tk.Focus(previous)
+		}
+		event.SetReturnCodeBreak()
+	})
+
+	tk.Bind(window, "<Tab>", forward)
+	tk.Bind(window, "<Shift-Key-Tab>", backward)
+	tk.Bind(window, "<ISO_Left_Tab>", backward)
 }

@@ -26,4 +26,7 @@
 // dynamic child replacement, and optional application-defined values.
 // NewWindow creates reusable secondary windows with independent content,
 // menus, focus, themes, timers, and safe parent-child lifecycles.
+// RadioGroup and ComboBox provide compact pointer-bound choices. Slider and
+// ProgressBar share ordinary float64 values for numeric input and progress,
+// including indeterminate busy feedback.
 package rosaline
