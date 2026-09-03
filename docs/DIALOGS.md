@@ -26,6 +26,30 @@ deleteDrawing()
 
 The result is true only when the user chooses Yes.
 
+## Protecting unsaved work
+
+`AskSaveChanges` distinguishes all three choices needed by a document
+application:
+
+```go
+switch rosaline.AskSaveChanges("Unsaved changes", "Save before closing?") {
+case rosaline.SaveChanges:
+	if !save() {
+		return // Saving was cancelled or failed.
+	}
+case rosaline.DiscardChanges:
+	// Continue without saving.
+default: // rosaline.CancelChanges
+	return // Keep the document open.
+}
+
+closeDocument()
+```
+
+The native dialog uses Yes, No, and Cancel buttons: Yes means save, No means
+continue without saving, and Cancel stops the pending action. Have the save
+function return false when its file dialog is cancelled or writing fails.
+
 ## Opening a file
 
 ```go

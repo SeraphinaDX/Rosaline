@@ -2,6 +2,17 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.14.1
+
+- Add `AskSaveChanges`, a standard three-way prompt that distinguishes saving,
+  discarding, and cancelling an action.
+- Fix the Notepad's New, Open, Quit, and window-close flows so No explicitly
+  continues without saving while Cancel keeps the current document open.
+- Keep the document open when Save As is cancelled or when a save fails.
+- Add non-visual tests for every save-prompt result.
+- Update the dialog, text-editing, and Notepad documentation with the safer
+  pattern.
+
 ## 0.14.0
 
 - Expand `TextArea` into a beginner-friendly document editor with `Text`,

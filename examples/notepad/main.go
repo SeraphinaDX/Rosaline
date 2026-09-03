@@ -60,18 +60,26 @@ func main() {
 			updateTitle()
 		})
 
-	canDiscard := func() bool {
+	var save, saveAs func() bool
+	confirmChanges := func(action string) bool {
 		if !editor.Modified() {
 			return true
 		}
-		return rosaline.Confirm(
+		switch rosaline.AskSaveChanges(
 			"Unsaved changes",
-			"Discard the unsaved changes to "+document.name()+"?",
-		)
+			"Save changes to "+document.name()+" before "+action+"?",
+		) {
+		case rosaline.SaveChanges:
+			return save != nil && save()
+		case rosaline.DiscardChanges:
+			return true
+		default:
+			return false
+		}
 	}
 
 	newDocument := func() {
-		if !canDiscard() {
+		if !confirmChanges("creating a new document") {
 			return
 		}
 		editor.SetText("")
@@ -97,7 +105,7 @@ func main() {
 			rosaline.Error("Could not open file", err.Error())
 			return
 		}
-		if !canDiscard() {
+		if !confirmChanges("opening " + filepath.Base(path)) {
 			return
 		}
 		editor.SetText(string(contents))
@@ -107,8 +115,7 @@ func main() {
 		updateTitle()
 	}
 
-	var saveAs func() bool
-	save := func() bool {
+	save = func() bool {
 		if document.path == "" {
 			return saveAs()
 		}
@@ -242,7 +249,7 @@ func main() {
 		Padding:        12,
 		Theme:          theme,
 		Menu:           menu,
-		OnCloseRequest: canDiscard,
+		OnCloseRequest: func() bool { return confirmChanges("closing") },
 		Content: rosaline.Column(
 			rosaline.Row(
 				rosaline.Label("ROSALINE").Bold().Color(theme.Primary),

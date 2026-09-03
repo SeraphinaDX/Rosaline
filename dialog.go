@@ -8,25 +8,61 @@ import (
 	tk "modernc.org/tk9.0"
 )
 
+var showMessageBox = tk.MessageBox
+
+// SaveDecision describes what the user wants to do with unsaved changes.
+type SaveDecision uint8
+
+const (
+	// CancelChanges keeps the document open and cancels the pending action.
+	CancelChanges SaveDecision = iota
+	// SaveChanges asks the application to save before continuing.
+	SaveChanges
+	// DiscardChanges continues without saving.
+	DiscardChanges
+)
+
 // Message displays a simple informational dialog.
 func Message(title, text string) {
-	tk.MessageBox(tk.Title(title), tk.Msg(text), tk.Type("ok"), tk.Icon("info"), tk.Parent(tk.App))
+	showMessageBox(tk.Title(title), tk.Msg(text), tk.Type("ok"), tk.Icon("info"), tk.Parent(tk.App))
 }
 
 // Error displays an error dialog.
 func Error(title, text string) {
-	tk.MessageBox(tk.Title(title), tk.Msg(text), tk.Type("ok"), tk.Icon("error"), tk.Parent(tk.App))
+	showMessageBox(tk.Title(title), tk.Msg(text), tk.Type("ok"), tk.Icon("error"), tk.Parent(tk.App))
 }
 
 // Confirm asks a yes-or-no question and reports whether the user chose Yes.
 func Confirm(title, text string) bool {
-	return tk.MessageBox(
+	return showMessageBox(
 		tk.Title(title),
 		tk.Msg(text),
 		tk.Type("yesno"),
 		tk.Icon("question"),
 		tk.Parent(tk.App),
 	) == "yes"
+}
+
+// AskSaveChanges asks whether unsaved work should be saved, discarded, or
+// kept open. The dialog uses the platform's standard Yes, No, and Cancel
+// buttons: Yes returns SaveChanges, No returns DiscardChanges, and Cancel or
+// closing the dialog returns CancelChanges.
+func AskSaveChanges(title, text string) SaveDecision {
+	switch showMessageBox(
+		tk.Title(title),
+		tk.Msg(text),
+		tk.Type("yesnocancel"),
+		tk.Default("cancel"),
+		tk.Icon("warning"),
+		tk.Parent(tk.App),
+	) {
+	case "yes":
+		return SaveChanges
+	case "no":
+		return DiscardChanges
+	default:
+		return CancelChanges
+	}
 }
 
 // FileFilter describes one group of files in an open or save dialog.

@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.14.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.14.1`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -400,8 +400,17 @@ editor := rosaline.TextArea(&text).Expand().Focus()
 
 rosaline.RunApp(rosaline.App{
 	OnCloseRequest: func() bool {
-		return !editor.Modified() ||
-			rosaline.Confirm("Unsaved changes", "Discard this document?")
+		if !editor.Modified() {
+			return true
+		}
+		switch rosaline.AskSaveChanges("Unsaved changes", "Save before closing?") {
+		case rosaline.SaveChanges:
+			return save()
+		case rosaline.DiscardChanges:
+			return true
+		default:
+			return false
+		}
 	},
 	Content: editor,
 })
@@ -409,10 +418,12 @@ rosaline.RunApp(rosaline.App{
 
 `Text`, `SetText`, `Append`, `Clear`, `MarkSaved`, undo/redo, clipboard
 commands, selection, find/replace, and cursor position remain methods on the
-same small widget. See [Text Editing](docs/TEXT_EDITING.md) and the complete
+same small widget. The close prompt offers Save, Discard, and Cancel without
+risking a document when saving is cancelled or fails. See
+[Text Editing](docs/TEXT_EDITING.md) and the complete
 [Notepad application](docs/NOTEPAD_APPLICATION.md).
 
-## Included in v0.14.0
+## Included in v0.14.1
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment

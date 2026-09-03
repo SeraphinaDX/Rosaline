@@ -1,6 +1,6 @@
 # Building the Rosaline Notepad
 
-The Notepad is Rosaline v0.14.0's complete text-editing tutorial. It combines
+The Notepad is Rosaline v0.14.1's complete text-editing tutorial. It combines
 an expanding editor, files, menus, shortcuts, undo and redo, the clipboard,
 find and replace, a secondary tool window, saved-state tracking, dynamic window
 titles, cursor position, document statistics, and safe closing.
@@ -98,19 +98,31 @@ Notepad's lifetime without creating another event loop.
 After a successful save, `MarkSaved` moves the checkpoint to the current text.
 This is safer than maintaining a Boolean that can become incorrect after undo.
 
-The same `canDiscard` function protects New, Open, and Quit:
+The same `confirmChanges` function protects New, Open, and Quit:
 
 ```go
-canDiscard := func() bool {
+confirmChanges := func(action string) bool {
 	if !editor.Modified() {
 		return true
 	}
-	return rosaline.Confirm("Unsaved changes", "Discard this document?")
+	switch rosaline.AskSaveChanges(
+		"Unsaved changes",
+		"Save changes before "+action+"?",
+	) {
+	case rosaline.SaveChanges:
+		return save()
+	case rosaline.DiscardChanges:
+		return true
+	default:
+		return false
+	}
 }
 ```
 
-The application also gives it to `App.OnCloseRequest`, so the desktop close
-button follows the same rule.
+Yes saves, No continues without saving, and Cancel keeps the document open. If
+Save As is cancelled or a write fails, `save` returns false and the pending
+action is stopped. The application also gives this function to
+`App.OnCloseRequest`, so the desktop close button follows the same rule.
 
 ## Build a live status bar
 

@@ -144,17 +144,29 @@ ends the application:
 ```go
 rosaline.RunApp(rosaline.App{
 	OnCloseRequest: func() bool {
-		return !editor.Modified() || rosaline.Confirm(
+		if !editor.Modified() {
+			return true
+		}
+		switch rosaline.AskSaveChanges(
 			"Unsaved changes",
-			"Discard this document?",
-		)
+			"Save before closing?",
+		) {
+		case rosaline.SaveChanges:
+			return save()
+		case rosaline.DiscardChanges:
+			return true
+		default:
+			return false
+		}
 	},
 	Content: editor,
 })
 ```
 
 Return `true` to close or `false` to keep the window open. Secondary windows
-support the same option in `WindowOptions`.
+support the same option in `WindowOptions`. The prompt's Yes button saves, No
+continues without saving, and Cancel keeps the document open. A save function
+should return false when Save As is cancelled or writing fails.
 
 ## Common mistakes
 
