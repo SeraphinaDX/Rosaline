@@ -2,6 +2,25 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.15.0
+
+- Add Starshower, a polished vector arcade game built entirely with Rosaline
+  and ordinary Go.
+- Demonstrate fixed-step simulation with delayed-frame protection and a 60 FPS
+  Rosaline animation timer.
+- Add smooth held-key turning, thrust, and firing using canvas key-down and
+  key-up events without depending on platform key-repeat timing.
+- Add reusable vector spacecraft, transformed irregular asteroids, a twinkling
+  star field, and seamless drawing across screen edges.
+- Add wrapped collision detection, asteroid splitting, increasing waves,
+  scoring, lives, temporary respawn protection, pause, game over, and restart.
+- Make `CanvasWidget.Focus` restore keyboard focus immediately when called
+  after mounting while preserving its initial-focus behavior.
+- Add non-visual game-model tests for timing, movement, firing, screen wrapping,
+  collisions, splitting, scoring, lives, game over, and wave progression.
+- Add the complete Building Starshower tutorial and extend the animation and
+  keyboard-input guides for real-time games.
+
 ## 0.14.1
 
 - Add `AskSaveChanges`, a standard three-way prompt that distinguishes saving,

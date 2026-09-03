@@ -115,12 +115,12 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 
 ## v0.15 — Canvas games
 
-- [ ] Fixed-step game model
-- [ ] Held-key movement and firing
-- [ ] Vector shapes and transforms
-- [ ] Screen wrapping and collision detection
-- [ ] Score, lives, pause, and restart states
-- [ ] Complete Starshower application
+- [x] Fixed-step game model
+- [x] Held-key movement and firing
+- [x] Vector shapes and transforms
+- [x] Screen wrapping and collision detection
+- [x] Score, lives, pause, and restart states
+- [x] Complete Starshower application
 
 ## Documentation applications
 
@@ -135,4 +135,4 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] Task settings
 - [x] Keyboard garden
 - [x] Background image generator
-- [ ] Small canvas game (Starshower)
+- [x] Small canvas game (Starshower)

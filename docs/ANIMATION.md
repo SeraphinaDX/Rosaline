@@ -99,6 +99,26 @@ with the same Go state.
 Keep each frame callback short. Store the scene in Go variables and let the
 canvas drawing function render those variables.
 
+## Games and fixed simulation steps
+
+For a game, measure the real time between drawing frames but update the model
+in small, consistent steps. This makes movement and collision behavior stable
+when frame delivery varies:
+
+```go
+accumulator += elapsed.Seconds()
+for accumulator >= fixedStep {
+	update(fixedStep)
+	accumulator -= fixedStep
+}
+canvas.Redraw()
+```
+
+Cap unusually large elapsed durations so opening a dialog or moving a window
+does not make the game jump forward. The complete
+[Starshower application](STARSHOWER_APPLICATION.md) demonstrates the pattern
+with held keys, movement, firing, collisions, pause, and restart.
+
 ## Common mistakes
 
 ### Forgetting Redraw

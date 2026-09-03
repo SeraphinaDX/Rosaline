@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.14.1`. The public API is small on purpose and grows
+Rosaline is currently at `v0.15.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -213,6 +213,35 @@ rosaline.RunApp(rosaline.App{
 Use `After` for one delayed callback and `Animate` for a frame-rate-based
 canvas loop. See [docs/TIMERS.md](docs/TIMERS.md) and
 [docs/ANIMATION.md](docs/ANIMATION.md).
+
+## A complete canvas game
+
+Rosaline's normal canvas, timer, keyboard, path, and transform APIs are enough
+for a real-time vector game:
+
+```go
+canvas.OnKeyDown(func(event rosaline.KeyEvent) {
+	if event.Is(rosaline.KeySpace) {
+		controls.fire = true
+	}
+})
+canvas.OnKeyUp(func(event rosaline.KeyEvent) {
+	if event.Is(rosaline.KeySpace) {
+		controls.fire = false
+	}
+})
+
+animation := rosaline.Animate(60, func() {
+	game.Update()
+	canvas.Redraw()
+})
+```
+
+The complete **Starshower** application adds a fixed-step model, held-key
+movement, vector spacecraft and asteroids, screen wrapping, collision
+detection, splitting rocks, waves, scoring, lives, pause, and restart. Its game
+rules have fast tests that do not open a window. See
+[Building Starshower](docs/STARSHOWER_APPLICATION.md).
 
 ## Slow work without a frozen window
 
@@ -423,7 +452,7 @@ risking a document when saving is cancelled or fails. See
 [Text Editing](docs/TEXT_EDITING.md) and the complete
 [Notepad application](docs/NOTEPAD_APPLICATION.md).
 
-## Included in v0.14.1
+## Included in v0.15.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -452,8 +481,8 @@ risking a document when saving is cancelled or fails. See
 - Backend-neutral window and canvas key-down and key-up events
 - Friendly named key constants, printable text, and modifier fields
 - Menu-free application shortcuts with cross-platform `Primary` modifiers
-- Keyboard-enabled canvases with initial focus, click-to-focus, a visible focus
-  ring, and automatic redraw
+- Keyboard-enabled canvases with initial or callback-requested focus,
+  click-to-focus, a visible focus ring, and automatic redraw
 - A first-class canvas with lines, rectangles, circles, and text
 - Reusable paths with straight, quadratic, and cubic Bézier sections
 - Translate, rotate, scale, Push/Pop, and transformed clipping
@@ -507,10 +536,12 @@ risking a document when saving is cancelled or fails. See
   typography, adaptive spacing, keyboard input, shortcuts, and tested logic
 - A complete Notepad combining document editing, files, menus, shortcuts,
   find/replace, saved-state tracking, status information, and safe closing
+- A complete Starshower vector game combining fixed-step simulation, held-key
+  controls, transforms, wrapping, collisions, score, lives, waves, and pause
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
   applications, Task Settings, Keyboard Garden, Background Bloom, and the
-  Calculator and Notepad
+  Calculator, Notepad, and Starshower
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -534,13 +565,14 @@ CGO_ENABLED=0 go run ./examples/keyboard
 CGO_ENABLED=0 go run ./examples/background
 CGO_ENABLED=0 go run ./examples/calculator
 CGO_ENABLED=0 go run ./examples/notepad
+CGO_ENABLED=0 go run ./examples/starshower
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestone adds the Starshower
-canvas game, followed by accessibility groundwork, custom widgets, and deeper
-Linux display testing.
+The API is experimental until v1.0. With the documentation-application set now
+complete, development is shifting toward custom widgets, accessibility
+groundwork, API stabilization, and deeper Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

@@ -60,11 +60,15 @@ func (c *CanvasWidget) Expand() *CanvasWidget {
 	return c
 }
 
-// Focus asks Rosaline to give this canvas keyboard focus when the window
-// opens. A canvas with a key handler also participates in Tab focus order.
+// Focus gives this canvas keyboard focus. Before the window opens, it asks
+// Rosaline to focus the canvas initially. A canvas with a key handler also
+// participates in Tab focus order.
 func (c *CanvasWidget) Focus() *CanvasWidget {
 	if c != nil {
 		c.focus = true
+		if c.widget != nil {
+			tk.Focus(c.widget.Window)
+		}
 	}
 	return c
 }

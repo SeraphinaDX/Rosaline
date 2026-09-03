@@ -39,4 +39,6 @@
 // TextArea supports expanding document editors with saved-state tracking,
 // undo and redo, clipboard commands, selection, find and replace, and cursor
 // positions. Window close requests can be cancelled to protect unsaved work.
+// Canvas keyboard events, animation timers, paths, and transforms also support
+// small real-time games while application logic remains ordinary testable Go.
 package rosaline

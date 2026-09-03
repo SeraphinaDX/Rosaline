@@ -123,10 +123,15 @@ canvas := rosaline.Canvas(draw).
 	})
 ```
 
-`Focus` asks for initial focus. A canvas with either key handler automatically
-joins Tab focus order, shows a focus ring, and receives focus when clicked.
-Rosaline redraws it after a key callback unless the callback already called
-`Redraw`.
+`Focus` asks for initial focus before the window opens. Calling it later from a
+button or menu callback immediately restores focus to the canvas. A canvas with
+either key handler automatically joins Tab focus order, shows a focus ring, and
+receives focus when clicked. Rosaline redraws it after a key callback unless
+the callback already called `Redraw`.
+
+For smooth game controls, set a Boolean on key down and clear it on key up. The
+complete [Starshower application](STARSHOWER_APPLICATION.md) uses this pattern
+for turning, thrust, and firing without relying on platform key-repeat timing.
 
 If the same window also has an application key handler, a canvas event can be
 observed by both. Keep canvas movement in the canvas handler and window-wide

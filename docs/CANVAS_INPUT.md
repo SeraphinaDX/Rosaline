@@ -98,6 +98,11 @@ show a focus ring, and redraw automatically after their key callbacks. See
 [KEYBOARD_INPUT.md](KEYBOARD_INPUT.md) and the complete
 [Keyboard Garden application](KEYBOARD_GARDEN_APPLICATION.md).
 
+Calling `Focus()` again from a button or menu callback returns keyboard focus
+to an already-open canvas. This is useful for games and other keyboard-driven
+tools. The complete [Starshower application](STARSHOWER_APPLICATION.md) shows
+held-key movement and firing.
+
 ## Redrawing from another control
 
 Mouse callbacks redraw automatically. If a button or another Rosaline callback
