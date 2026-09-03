@@ -102,12 +102,32 @@ The roadmap favors a small set of dependable, thoroughly documented features.
 - [x] Label typography and text alignment
 - [x] Complete Calculator application
 
+## v0.14 — Text editing
+
+- [x] Expanding text areas with automatic scrolling
+- [x] Programmatic text replacement, appending, and clearing
+- [x] Saved and modified document state
+- [x] Undo, redo, clipboard, and selection commands
+- [x] Find and replace
+- [x] Cursor line and column reporting
+- [x] Cancellable window close requests
+- [x] Complete Notepad application
+
+## v0.15 — Canvas games
+
+- [ ] Fixed-step game model
+- [ ] Held-key movement and firing
+- [ ] Vector shapes and transforms
+- [ ] Screen wrapping and collision detection
+- [ ] Score, lives, pause, and restart states
+- [ ] Complete Starshower application
+
 ## Documentation applications
 
 Each longer tutorial will explain why the program is structured as it is:
 
 - [x] Calculator
-- [ ] Notepad
+- [x] Notepad
 - [x] Image viewer
 - [x] Paint program
 - [x] Preferences application
@@ -115,4 +135,4 @@ Each longer tutorial will explain why the program is structured as it is:
 - [x] Task settings
 - [x] Keyboard garden
 - [x] Background image generator
-- [ ] Small canvas game
+- [ ] Small canvas game (Starshower)

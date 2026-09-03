@@ -174,5 +174,7 @@ Use `LabelFunc` for changing text and `Label` for fixed text.
 - Build adaptive grids, stacks, cards, alignment, and flexible spacing with
   [LAYOUT_AND_PRESENTATION.md](LAYOUT_AND_PRESENTATION.md), then run
   `go run ./examples/calculator`.
+- Turn a multiline input into a complete document editor with
+  [TEXT_EDITING.md](TEXT_EDITING.md), then run `go run ./examples/notepad`.
 - Read `docs/ROADMAP.md` to see which features come next.
 - Build a two-button counter with Add and Subtract actions.

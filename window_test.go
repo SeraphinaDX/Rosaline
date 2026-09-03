@@ -112,6 +112,33 @@ func TestWindowShowOutsideRunningApplicationIsSafe(t *testing.T) {
 	}
 }
 
+func TestWindowCloseRequestCanKeepWindowOpen(t *testing.T) {
+	installFakeWindowSession(t)
+	closes := 0
+	requests := 0
+	showWindowBackend = func(*Window) {}
+	closeWindowBackend = func(*Window) { closes++ }
+
+	allow := false
+	window := NewWindow(WindowOptions{OnCloseRequest: func() bool {
+		requests++
+		return allow
+	}})
+	window.Show()
+	window.Close()
+	if !window.IsOpen() || closes != 0 || requests != 1 {
+		t.Fatalf("cancelled close = open %v, closes %d, requests %d",
+			window.IsOpen(), closes, requests)
+	}
+
+	allow = true
+	window.Close()
+	if window.IsOpen() || closes != 1 || requests != 2 {
+		t.Fatalf("allowed close = open %v, closes %d, requests %d",
+			window.IsOpen(), closes, requests)
+	}
+}
+
 func TestSecondaryWindowInheritsApplicationThemeAndDefaults(t *testing.T) {
 	session := installFakeWindowSession(t)
 	theme := DefaultTheme

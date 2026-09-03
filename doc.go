@@ -36,4 +36,7 @@
 // progress reports, completion callbacks, and safe GUI-thread result posting.
 // Grid, Stack, Align, Center, Spring, Separator, Card, Size, and MinSize build
 // polished adaptive layouts while remaining ordinary composable widgets.
+// TextArea supports expanding document editors with saved-state tracking,
+// undo and redo, clipboard commands, selection, find and replace, and cursor
+// positions. Window close requests can be cancelled to protect unsaved work.
 package rosaline

@@ -21,7 +21,10 @@ type App struct {
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
-	Content   Widget
+	// OnCloseRequest runs before the window closes. Return false to keep the
+	// application open, for example while a document has unsaved changes.
+	OnCloseRequest func() bool
+	Content        Widget
 }
 
 var activeContext *mountContext
@@ -37,7 +40,8 @@ func RunApp(app App) {
 		Title: app.Title, Width: app.Width, Height: app.Height,
 		Padding: app.Padding, Theme: app.Theme, Menu: app.Menu,
 		Timers: app.Timers, Tasks: app.Tasks, Shortcuts: app.Shortcuts,
-		OnKeyDown: app.OnKeyDown, OnKeyUp: app.OnKeyUp, Content: app.Content,
+		OnKeyDown: app.OnKeyDown, OnKeyUp: app.OnKeyUp,
+		OnCloseRequest: app.OnCloseRequest, Content: app.Content,
 	}}).resolvedOptions()
 
 	session := &applicationSession{
@@ -92,6 +96,9 @@ func RunApp(app App) {
 // Quit closes the Rosaline application.
 func Quit() {
 	if activeSession == nil || activeSession.closing {
+		return
+	}
+	if activeSession.main != nil && !activeSession.main.closeAllowed() {
 		return
 	}
 	activeSession.closing = true

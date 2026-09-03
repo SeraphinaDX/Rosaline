@@ -22,9 +22,12 @@ type WindowOptions struct {
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
-	Content   Widget
-	Parent    *Window
-	OnClose   func()
+	// OnCloseRequest runs before a direct close request. Return false to keep
+	// the window open. OnClose runs after the window has closed.
+	OnCloseRequest func() bool
+	Content        Widget
+	Parent         *Window
+	OnClose        func()
 }
 
 // Window is a reusable secondary-window handle. Create one with NewWindow.
@@ -131,7 +134,14 @@ func (w *Window) Close() {
 		Quit()
 		return
 	}
+	if !w.closeAllowed() {
+		return
+	}
 	w.close(true, true)
+}
+
+func (w *Window) closeAllowed() bool {
+	return w == nil || w.options.OnCloseRequest == nil || w.options.OnCloseRequest()
 }
 
 // Focus raises and focuses an open window. Closed windows are unchanged.

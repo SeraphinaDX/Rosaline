@@ -2,6 +2,25 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.14.0
+
+- Expand `TextArea` into a beginner-friendly document editor with `Text`,
+  `SetText`, `Append`, `Clear`, and full-window `Expand` operations.
+- Add automatic vertical text scrolling while keeping backend widgets private.
+- Add saved-text checkpoints through `Modified` and `MarkSaved`, including
+  natural clean-state restoration when undo returns to the saved content.
+- Add safe undo, redo, cut, copy, paste, and select-all methods suitable for
+  direct use as menu callbacks.
+- Add exact wrapping `FindNext`, `ReplaceSelection`, and `ReplaceAll` methods.
+- Add backend-neutral `TextPosition`, `Cursor`, and `OnCursorMove` APIs.
+- Add cancellable `OnCloseRequest` callbacks to primary and secondary windows
+  so applications can protect unsaved work.
+- Add focused non-visual tests for text document state, replacement, searching,
+  cursor-index parsing, safe unmounted commands, and cancelled window closure.
+- Add a complete Text Editing guide and a polished Notepad application with
+  files, menus, shortcuts, a find window, live statistics, and tested model
+  logic.
+
 ## 0.13.0
 
 - Add beginner-friendly `Grid` layouts with automatic rows, equal-width

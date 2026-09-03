@@ -87,6 +87,11 @@ rosaline.TextArea(&notes).Size(48, 8)
 `Focus` work the same way as they do on a text box. Enter creates a new line,
 as users expect from a multiline editor.
 
+Call `Expand` when a text area should fill the available window space. Rosaline
+adds its vertical scrollbar automatically. For document content, undo and
+redo, clipboard commands, saved-state tracking, find and replace, and cursor
+positions, continue with [Text Editing](TEXT_EDITING.md).
+
 ## Keyboard navigation
 
 Press Tab to move to the next interactive control and Shift+Tab to move to the

@@ -101,6 +101,13 @@ Radio groups reserve one logical focus slot even though they contain several
 native buttons. Replacing their choices updates that slot to the selected
 button, so dynamic groups remain predictable in Tab traversal.
 
+Text areas keep their bound string and saved checkpoint in normal Go state.
+The backend owns the transient undo stack, selection, insertion mark,
+scrollbar, and desktop clipboard integration. Rosaline converts cursor indices
+into `TextPosition` and exposes editing commands as safe methods, allowing an
+application to use the same functions for menus and shortcuts without seeing
+backend objects.
+
 ## Keyboard boundary
 
 Native key symbols and platform modifier masks are converted into Rosaline's
@@ -163,6 +170,11 @@ handles; the backend mapping and native transient relationships stay private.
 Closing a parent walks its registered descendants before destroying the
 parent, while application quit closes the entire session through the same
 lifecycle path.
+
+An optional close-request callback runs before a directly requested close.
+Returning false leaves the session and its mounted controls unchanged, which
+lets document applications ask about unsaved work without taking ownership of
+the platform's window-manager protocol.
 
 ## Canvas input and redraw
 

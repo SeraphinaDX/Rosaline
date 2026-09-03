@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.13.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.14.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -389,7 +389,30 @@ handlers observe input without breaking normal text editing. See
 [Keyboard Input and Shortcuts](docs/KEYBOARD_INPUT.md) and the complete
 [Keyboard Garden application](docs/KEYBOARD_GARDEN_APPLICATION.md).
 
-## Included in v0.13.0
+## Edit real documents
+
+An expanding text area includes the editing operations needed by a document
+application:
+
+```go
+text := ""
+editor := rosaline.TextArea(&text).Expand().Focus()
+
+rosaline.RunApp(rosaline.App{
+	OnCloseRequest: func() bool {
+		return !editor.Modified() ||
+			rosaline.Confirm("Unsaved changes", "Discard this document?")
+	},
+	Content: editor,
+})
+```
+
+`Text`, `SetText`, `Append`, `Clear`, `MarkSaved`, undo/redo, clipboard
+commands, selection, find/replace, and cursor position remain methods on the
+same small widget. See [Text Editing](docs/TEXT_EDITING.md) and the complete
+[Notepad application](docs/NOTEPAD_APPLICATION.md).
+
+## Included in v0.14.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -400,8 +423,11 @@ handlers observe input without breaking normal text editing. See
 - Adaptive springs, themed separators and cards, and preferred or minimum
   sizing wrappers
 - Simple state values
-- Single-line and multiline text input
+- Single-line input and expanding multiline document editing with a native
+  scrollbar
 - Password display, placeholders, change events, and Enter submission
+- Text-area content methods, saved-state tracking, undo/redo, clipboard
+  commands, selection, exact find/replace, and cursor position
 - Checkboxes bound to Go Boolean variables
 - Radio groups with separate labels and values, vertical or horizontal layout,
   callbacks, programmatic selection, and dynamic choices
@@ -450,6 +476,7 @@ handlers observe input without breaking normal text editing. See
   timers
 - Parent-child window lifecycles, automatic parent opening, cascading closure,
   and duplicate prevention
+- Cancellable close requests for protecting unsaved window content
 - Automatic dynamic-widget refresh across every open window
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
@@ -467,10 +494,12 @@ handlers observe input without breaking normal text editing. See
   cancellation, result posting, shortcuts, dialogs, and PNG export
 - A complete Calculator combining grids, stacks, cards, alignment, dynamic
   typography, adaptive spacing, keyboard input, shortcuts, and tested logic
+- A complete Notepad combining document editing, files, menus, shortcuts,
+  find/replace, saved-state tracking, status information, and safe closing
 - Runnable hello, counter, canvas, forms, drawing, paint, image-viewer, and
   animation examples, plus the Preferences, File Browser, and Project Desk
   applications, Task Settings, Keyboard Garden, Background Bloom, and the
-  Calculator
+  Calculator and Notepad
 - Unit tests for non-visual core behavior
 
 ## Run the examples
@@ -493,12 +522,14 @@ CGO_ENABLED=0 go run ./examples/tasksettings
 CGO_ENABLED=0 go run ./examples/keyboard
 CGO_ENABLED=0 go run ./examples/background
 CGO_ENABLED=0 go run ./examples/calculator
+CGO_ENABLED=0 go run ./examples/notepad
 ```
 
 ## Project status
 
-The API is experimental until v1.0. The next milestones add accessibility
-groundwork, custom widgets, and deeper Linux display testing.
+The API is experimental until v1.0. The next milestone adds the Starshower
+canvas game, followed by accessibility groundwork, custom widgets, and deeper
+Linux display testing.
 
 Rosaline's backend is intentionally private. Application code only imports the
 `rosaline` package, so the backend can improve without forcing beginners to

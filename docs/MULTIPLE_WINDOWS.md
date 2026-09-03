@@ -101,6 +101,22 @@ settingsWindow := rosaline.NewWindow(rosaline.WindowOptions{
 })
 ```
 
+Use `OnCloseRequest` when a window may need to remain open:
+
+```go
+settingsWindow := rosaline.NewWindow(rosaline.WindowOptions{
+	Title: "Notes",
+	OnCloseRequest: func() bool {
+		return !editor.Modified() ||
+			rosaline.Confirm("Unsaved changes", "Discard these notes?")
+	},
+	Content: editor,
+})
+```
+
+Return false to cancel the direct close request. `OnClose` runs only after an
+allowed close has completed.
+
 ## Parent and child windows
 
 Use `MainWindow()` when a tool belongs to the primary application window:
