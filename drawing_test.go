@@ -3,6 +3,7 @@
 package rosaline
 
 import (
+	"image"
 	"image/color"
 	"testing"
 )
@@ -102,6 +103,26 @@ func TestCanvasPictureWorksBeforeMount(t *testing.T) {
 		t.Fatalf("picture size = %dx%d, want 50x40", picture.Width(), picture.Height())
 	}
 	assertPixel(t, picture, 20, 20, nativeColor(Rose))
+}
+
+func TestDrawingCanvasDrawsPictures(t *testing.T) {
+	pixels := image.NewRGBA(image.Rect(0, 0, 8, 4))
+	for y := range 4 {
+		for x := range 8 {
+			pixels.Set(x, y, nativeColor(Rose))
+		}
+	}
+	picture := NewPicture(pixels)
+
+	result := Render(50, 40, func(canvas *DrawingCanvas) {
+		canvas.Clear(White)
+		canvas.Image(picture, 2, 3)
+		canvas.ImageFit(picture, Rect{X: 20, Y: 5, Width: 20, Height: 20})
+	})
+
+	assertPixel(t, result, 4, 4, nativeColor(Rose))
+	assertPixel(t, result, 30, 15, nativeColor(Rose))
+	assertPixel(t, result, 30, 6, nativeColor(White))
 }
 
 func assertPixel(t *testing.T, picture *Picture, x, y int, want color.NRGBA) {

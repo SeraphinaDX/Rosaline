@@ -2,6 +2,22 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.16.0
+
+- Add `LoadImageFS` so applications can load pictures from `embed.FS` and
+  other standard Go filesystems.
+- Add `Image.Fit` for aspect-preserving image sizing suitable for visual form
+  designers and responsive application layouts.
+- Add `Image.OnClick` for interactive picture controls.
+- Add `DrawingCanvas.Image` and `DrawingCanvas.ImageFit` for native picture
+  rendering in custom drawing surfaces and designer previews.
+- Add `Canvas.OnDoubleClick` for editors, inspectors, and other direct-
+  manipulation interfaces.
+- Make `TextArea.Focus` focus an already-mounted editor as well as request
+  initial focus.
+- Add tests and documentation for embedded, fitted, drawn, and interactive
+  pictures.
+
 ## 0.15.0
 
 - Add Starshower, a polished vector arcade game built entirely with Rosaline

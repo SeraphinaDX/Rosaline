@@ -8,20 +8,21 @@ import (
 
 // CanvasWidget is a custom 2D drawing surface.
 type CanvasWidget struct {
-	draw        func(*DrawingCanvas)
-	width       int
-	height      int
-	background  Color
-	expand      bool
-	focus       bool
-	onMouseDown func(MouseEvent)
-	onMouseMove func(MouseEvent)
-	onMouseUp   func(MouseEvent)
-	onKeyDown   func(KeyEvent)
-	onKeyUp     func(KeyEvent)
-	widget      *tk.CanvasWidget
-	tkImage     *tk.Img
-	redrawCount uint64
+	draw          func(*DrawingCanvas)
+	width         int
+	height        int
+	background    Color
+	expand        bool
+	focus         bool
+	onMouseDown   func(MouseEvent)
+	onDoubleClick func(MouseEvent)
+	onMouseMove   func(MouseEvent)
+	onMouseUp     func(MouseEvent)
+	onKeyDown     func(KeyEvent)
+	onKeyUp       func(KeyEvent)
+	widget        *tk.CanvasWidget
+	tkImage       *tk.Img
+	redrawCount   uint64
 }
 
 // Canvas creates a 2D drawing surface.
@@ -76,6 +77,15 @@ func (c *CanvasWidget) Focus() *CanvasWidget {
 // OnMouseDown runs when a mouse button is pressed over the canvas.
 func (c *CanvasWidget) OnMouseDown(handler func(MouseEvent)) *CanvasWidget {
 	c.onMouseDown = handler
+	return c
+}
+
+// OnDoubleClick runs when the primary mouse button is double-clicked over the
+// canvas. It is useful for opening or editing the item under the pointer.
+func (c *CanvasWidget) OnDoubleClick(handler func(MouseEvent)) *CanvasWidget {
+	if c != nil {
+		c.onDoubleClick = handler
+	}
 	return c
 }
 
@@ -196,6 +206,12 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 				dispatch(c.onMouseDown, mouseEvent(event, button, true))
 			}))
 		}
+	}
+	if c.onDoubleClick != nil {
+		tk.Bind(widget.Window, "<Double-Button-1>", tk.Command(func(event *tk.Event) {
+			dispatch(c.onDoubleClick, mouseEvent(event, MouseLeft, false))
+			event.SetReturnCodeBreak()
+		}))
 	}
 
 	if c.onMouseMove != nil {

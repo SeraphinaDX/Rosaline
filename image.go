@@ -8,10 +8,14 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
+	"io/fs"
+	"math"
 	"os"
 
 	_ "github.com/gen2brain/avif"
 	_ "golang.org/x/image/bmp"
+	xdraw "golang.org/x/image/draw"
 	_ "golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
 	tk "modernc.org/tk9.0"
@@ -37,8 +41,25 @@ func LoadImage(path string) (*Picture, error) {
 		return nil, fmt.Errorf("rosaline: could not open image %q: %w", path, err)
 	}
 	defer file.Close()
+	return decodePicture(file, path)
+}
 
-	pixels, format, err := image.Decode(file)
+// LoadImageFS reads an image from a standard Go filesystem such as embed.FS.
+// It is useful for applications that ship pictures inside their executable.
+func LoadImageFS(fileSystem fs.FS, path string) (*Picture, error) {
+	if fileSystem == nil {
+		return nil, fmt.Errorf("rosaline: could not open image %q: filesystem is nil", path)
+	}
+	file, err := fileSystem.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("rosaline: could not open image %q: %w", path, err)
+	}
+	defer file.Close()
+	return decodePicture(file, path)
+}
+
+func decodePicture(reader io.Reader, path string) (*Picture, error) {
+	pixels, format, err := image.Decode(reader)
 	if err != nil {
 		return nil, fmt.Errorf("rosaline: could not decode image %q: %w", path, err)
 	}
@@ -91,7 +112,10 @@ func (p *Picture) Image() image.Image {
 type ImageWidget struct {
 	picture     *Picture
 	placeholder string
+	fitWidth    int
+	fitHeight   int
 	expand      bool
+	onClick     func()
 	label       *tk.LabelWidget
 	tkImage     *tk.Img
 }
@@ -105,6 +129,30 @@ func Image(picture *Picture) *ImageWidget {
 // Placeholder changes the text shown when no picture is loaded.
 func (i *ImageWidget) Placeholder(text string) *ImageWidget {
 	i.placeholder = text
+	return i
+}
+
+// Fit displays the picture inside a fixed pixel area while preserving its
+// aspect ratio. Any unused area remains transparent and shows the theme's
+// surface color. Non-positive dimensions restore the picture's natural size.
+func (i *ImageWidget) Fit(width, height int) *ImageWidget {
+	if i == nil {
+		return i
+	}
+	if width <= 0 || height <= 0 {
+		i.fitWidth, i.fitHeight = 0, 0
+	} else {
+		i.fitWidth, i.fitHeight = width, height
+	}
+	i.apply()
+	return i
+}
+
+// OnClick runs when the user clicks the image.
+func (i *ImageWidget) OnClick(handler func()) *ImageWidget {
+	if i != nil {
+		i.onClick = handler
+	}
 	return i
 }
 
@@ -136,7 +184,11 @@ func (i *ImageWidget) apply() {
 		i.tkImage = nil
 		i.label.Configure(tk.Image(""), tk.Txt(i.placeholder))
 	} else {
-		i.tkImage = tk.NewPhoto(tk.Data(i.picture.pixels))
+		pixels := i.picture.pixels
+		if i.fitWidth > 0 && i.fitHeight > 0 {
+			pixels = fitImage(pixels, i.fitWidth, i.fitHeight)
+		}
+		i.tkImage = tk.NewPhoto(tk.Data(pixels))
 		i.label.Configure(tk.Image(i.tkImage), tk.Txt(""))
 	}
 	if oldImage != nil {
@@ -152,6 +204,13 @@ func (i *ImageWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget 
 		tk.Borderwidth(0),
 	)
 	i.apply()
+	if i.onClick != nil {
+		tk.Bind(i.label.Window, "<Button-1>", tk.Command(func() {
+			ctx.flush()
+			i.onClick()
+			ctx.refresh()
+		}))
+	}
 	ctx.addCleanup(func() {
 		if i.tkImage != nil {
 			i.tkImage.Delete()
@@ -160,4 +219,29 @@ func (i *ImageWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget 
 		i.label = nil
 	})
 	return mountedWidget{window: i.label.Window, expandX: i.expand, expandY: i.expand}
+}
+
+func fitImage(source image.Image, width, height int) image.Image {
+	if source == nil || width <= 0 || height <= 0 {
+		return source
+	}
+	box := source.Bounds()
+	if box.Dx() <= 0 || box.Dy() <= 0 {
+		return source
+	}
+	scale := math.Min(float64(width)/float64(box.Dx()), float64(height)/float64(box.Dy()))
+	scaledWidth := max(1, int(math.Round(float64(box.Dx())*scale)))
+	scaledHeight := max(1, int(math.Round(float64(box.Dy())*scale)))
+	x := (width - scaledWidth) / 2
+	y := (height - scaledHeight) / 2
+	destination := image.NewRGBA(image.Rect(0, 0, width, height))
+	xdraw.CatmullRom.Scale(
+		destination,
+		image.Rect(x, y, x+scaledWidth, y+scaledHeight),
+		source,
+		box,
+		xdraw.Over,
+		nil,
+	)
+	return destination
 }

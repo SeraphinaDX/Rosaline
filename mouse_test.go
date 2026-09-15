@@ -51,10 +51,11 @@ func TestCanvasMouseOptions(t *testing.T) {
 	up := 0
 	canvas := Canvas(nil).
 		OnMouseDown(func(MouseEvent) { down++ }).
+		OnDoubleClick(func(MouseEvent) { down++ }).
 		OnMouseMove(func(MouseEvent) { move++ }).
 		OnMouseUp(func(MouseEvent) { up++ })
 
-	if canvas.onMouseDown == nil || canvas.onMouseMove == nil || canvas.onMouseUp == nil {
+	if canvas.onMouseDown == nil || canvas.onDoubleClick == nil || canvas.onMouseMove == nil || canvas.onMouseUp == nil {
 		t.Fatal("canvas mouse handlers were not stored")
 	}
 	if down != 0 || move != 0 || up != 0 {

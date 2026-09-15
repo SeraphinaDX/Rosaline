@@ -55,6 +55,15 @@ canvas.OnMouseMove(func(event rosaline.MouseEvent) {
 })
 ```
 
+For form designers, diagram editors, and inspectors, a primary-button double
+click has its own callback:
+
+```go
+canvas.OnDoubleClick(func(event rosaline.MouseEvent) {
+	fmt.Println("open item at", event.X, event.Y)
+})
+```
+
 `X` and `Y` are canvas coordinates measured from the top-left corner. X grows
 to the right and Y grows downward, matching Rosaline's drawing coordinates.
 
