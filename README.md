@@ -452,7 +452,7 @@ risking a document when saving is cancelled or fails. See
 [Text Editing](docs/TEXT_EDITING.md) and the complete
 [Notepad application](docs/NOTEPAD_APPLICATION.md).
 
-## Included in v0.15.0
+## Included in v0.16.1
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -487,6 +487,7 @@ risking a document when saving is cancelled or fails. See
 - Reusable paths with straight, quadratic, and cubic Bézier sections
 - Translate, rotate, scale, Push/Pop, and transformed clipping
 - Canvas clicks, pointer movement, dragging, and button-release events
+- Right-click context menus for canvases and trees
 - Automatic and manually requested canvas redraws
 - CGo-free loading and display of PNG, JPEG, GIF, BMP, TIFF, WebP, and AVIF
 - Off-screen drawing with the same API as visible canvases
@@ -508,6 +509,7 @@ risking a document when saving is cancelled or fails. See
 - Table selection, activation, column sizing, dynamic rows, and two-axis
   scrolling
 - Native trees with nested nodes, labels, and application-defined values
+- Focus-safe tree key events for editor and hierarchy commands
 - Tree selection, activation, expansion callbacks, dynamic roots and children,
   and two-axis scrolling
 - Reusable secondary windows with simple show, close, focus, title, and state

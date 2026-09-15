@@ -46,13 +46,7 @@ func MenuBar(menus ...*AppMenu) *AppMenuBar {
 
 // Menu creates one named drop-down menu.
 func Menu(text string, entries ...MenuEntry) *AppMenu {
-	clean := make([]MenuEntry, 0, len(entries))
-	for _, entry := range entries {
-		if entry != nil {
-			clean = append(clean, entry)
-		}
-	}
-	return &AppMenu{text: text, entries: clean}
+	return &AppMenu{text: text, entries: cleanMenuEntries(entries)}
 }
 
 // MenuItem creates a clickable menu command.
@@ -103,4 +97,25 @@ func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget, window *tk.Wind
 
 func (menuSeparator) add(_ *mountContext, menu *tk.MenuWidget, _ *tk.Window) {
 	menu.AddSeparator()
+}
+
+func cleanMenuEntries(entries []MenuEntry) []MenuEntry {
+	clean := make([]MenuEntry, 0, len(entries))
+	for _, entry := range entries {
+		if entry != nil {
+			clean = append(clean, entry)
+		}
+	}
+	return clean
+}
+
+func mountPopupMenu(ctx *mountContext, parent *tk.Window, entries []MenuEntry) *tk.MenuWidget {
+	if ctx == nil || parent == nil || len(entries) == 0 {
+		return nil
+	}
+	menu := parent.Menu(tk.Tearoff(false))
+	for _, entry := range entries {
+		entry.add(ctx, menu, parent)
+	}
+	return menu
 }

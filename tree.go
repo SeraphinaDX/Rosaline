@@ -83,18 +83,20 @@ func (n *TreeNode) IsExpanded() bool {
 
 // TreeWidget displays nested nodes with native expansion and selection.
 type TreeWidget struct {
-	nodes      []*TreeNode
-	selected   *TreeNode
-	width      int
-	height     int
-	expand     bool
-	onSelect   func(node *TreeNode)
-	onActivate func(node *TreeNode)
-	onExpand   func(node *TreeNode, expanded bool)
-	tree       *tk.TTreeviewWidget
-	nodeItems  map[*TreeNode]string
-	itemNodes  map[string]*TreeNode
-	ctx        *mountContext
+	nodes       []*TreeNode
+	selected    *TreeNode
+	width       int
+	height      int
+	expand      bool
+	onSelect    func(node *TreeNode)
+	onActivate  func(node *TreeNode)
+	onExpand    func(node *TreeNode, expanded bool)
+	onKeyDown   func(KeyEvent)
+	contextMenu []MenuEntry
+	tree        *tk.TTreeviewWidget
+	nodeItems   map[*TreeNode]string
+	itemNodes   map[string]*TreeNode
+	ctx         *mountContext
 }
 
 // Tree creates a native tree. The first non-nil root node is selected by
@@ -234,6 +236,23 @@ func (t *TreeWidget) OnActivate(handler func(node *TreeNode)) *TreeWidget {
 func (t *TreeWidget) OnExpand(handler func(node *TreeNode, expanded bool)) *TreeWidget {
 	if t != nil {
 		t.onExpand = handler
+	}
+	return t
+}
+
+// OnKeyDown runs when a key is pressed while the tree has focus.
+func (t *TreeWidget) OnKeyDown(handler func(KeyEvent)) *TreeWidget {
+	if t != nil {
+		t.onKeyDown = handler
+	}
+	return t
+}
+
+// ContextMenu adds commands that appear when a tree node is right-clicked.
+// Rosaline selects the node beneath the pointer before showing the menu.
+func (t *TreeWidget) ContextMenu(entries ...MenuEntry) *TreeWidget {
+	if t != nil {
+		t.contextMenu = cleanMenuEntries(entries)
 	}
 	return t
 }
@@ -520,6 +539,30 @@ func (t *TreeWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 		t.activateSelection()
 		event.SetReturnCodeBreak()
 	}))
+	if t.onKeyDown != nil {
+		tk.Bind(t.tree.Window, "<KeyPress>", tk.Command(func(event *tk.Event) {
+			ctx.flush()
+			t.onKeyDown(keyEvent(event))
+			ctx.refresh()
+		}))
+	}
+	if popup := mountPopupMenu(ctx, parent, t.contextMenu); popup != nil {
+		tk.Bind(t.tree.Window, "<Button-3>", tk.Command(func(event *tk.Event) {
+			item := t.tree.IdentifyItem(event.X, event.Y)
+			node := t.itemNodes[item]
+			if node == nil {
+				return
+			}
+			changed := t.selected != node
+			t.selected = node
+			t.applySelection()
+			if changed {
+				t.notifySelection()
+			}
+			tk.Popup(popup.Window, event.XRoot, event.YRoot, nil)
+			event.SetReturnCodeBreak()
+		}))
+	}
 
 	return mountedWidget{window: frame.Window, expandX: t.expand, expandY: t.expand}
 }

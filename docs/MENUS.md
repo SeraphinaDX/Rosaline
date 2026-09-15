@@ -65,6 +65,30 @@ item := rosaline.MenuItem("Save", save).Shortcut("Primary+S")
 
 This avoids two versions of the same application logic.
 
+## Right-click context menus
+
+Canvases and trees accept the same `MenuItem` and `MenuSeparator` values as a
+menu bar:
+
+```go
+canvas.ContextMenu(
+	rosaline.MenuItem("Edit", editSelected),
+	rosaline.MenuSeparator(),
+	rosaline.MenuItem("Delete", deleteSelected),
+)
+```
+
+```go
+tree.ContextMenu(
+	rosaline.MenuItem("Rename", renameSelected),
+	rosaline.MenuItem("Delete", deleteSelected),
+)
+```
+
+A tree selects the node beneath the pointer before showing its menu. A canvas
+runs `OnMouseDown` first, so a drawing editor can select the shape beneath the
+pointer before the menu command runs.
+
 ## Secondary-window menus
 
 Pass a menu bar through `WindowOptions` just as you would through `App`:

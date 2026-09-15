@@ -20,6 +20,7 @@ type CanvasWidget struct {
 	onMouseUp     func(MouseEvent)
 	onKeyDown     func(KeyEvent)
 	onKeyUp       func(KeyEvent)
+	contextMenu   []MenuEntry
 	widget        *tk.CanvasWidget
 	tkImage       *tk.Img
 	redrawCount   uint64
@@ -119,6 +120,16 @@ func (c *CanvasWidget) OnKeyUp(handler func(KeyEvent)) *CanvasWidget {
 	return c
 }
 
+// ContextMenu adds commands that appear when the canvas is right-clicked.
+// The canvas's OnMouseDown handler runs first, which lets editors select the
+// item beneath the pointer before a command is chosen.
+func (c *CanvasWidget) ContextMenu(entries ...MenuEntry) *CanvasWidget {
+	if c != nil {
+		c.contextMenu = cleanMenuEntries(entries)
+	}
+	return c
+}
+
 // Redraw clears the canvas and runs its drawing function again. Call Redraw
 // from Rosaline callbacks after changing drawing state. Mouse callbacks redraw
 // automatically, so they normally do not need to call it themselves.
@@ -188,6 +199,7 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		}
 		ctx.refresh()
 	}
+	popup := mountPopupMenu(ctx, parent, c.contextMenu)
 
 	for _, binding := range []struct {
 		sequence string
@@ -197,13 +209,17 @@ func (c *CanvasWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget
 		{"<Button-2>", MouseMiddle},
 		{"<Button-3>", MouseRight},
 	} {
-		if c.onMouseDown != nil || (keyboardEnabled && binding.button == MouseLeft) {
+		if c.onMouseDown != nil || (keyboardEnabled && binding.button == MouseLeft) || (popup != nil && binding.button == MouseRight) {
 			button := binding.button
 			tk.Bind(widget.Window, binding.sequence, tk.Command(func(event *tk.Event) {
 				if keyboardEnabled && button == MouseLeft {
 					tk.Focus(widget.Window)
 				}
 				dispatch(c.onMouseDown, mouseEvent(event, button, true))
+				if popup != nil && button == MouseRight {
+					tk.Popup(popup.Window, event.XRoot, event.YRoot, nil)
+					event.SetReturnCodeBreak()
+				}
 			}))
 		}
 	}
