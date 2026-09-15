@@ -65,6 +65,44 @@ viewer.SetImage(picture)
 Call `SetImage(nil)` to clear it. `Picture()` returns the currently displayed
 picture.
 
+## Fitting a picture into the interface
+
+`Fit` gives an image a predictable pixel area without distorting it:
+
+```go
+rosaline.Image(picture).Fit(480, 300)
+```
+
+Rosaline preserves the aspect ratio, centers the picture, and leaves unused
+space transparent so the theme surface shows through. Calling `Fit(0, 0)`
+restores the picture's natural size.
+
+Images can also respond to clicks:
+
+```go
+rosaline.Image(picture).
+	Fit(240, 160).
+	OnClick(func() {
+		rosaline.Message("Picture", "You clicked the picture.")
+	})
+```
+
+## Embedding pictures in the executable
+
+`LoadImageFS` reads from any standard Go `fs.FS`, including `embed.FS`:
+
+```go
+import "embed"
+
+//go:embed assets/rose.png
+var assets embed.FS
+
+picture, err := rosaline.LoadImageFS(assets, "assets/rose.png")
+```
+
+This is useful for distributable applications because the picture does not
+depend on the program's current working directory.
+
 ## Using Go-generated images
 
 `NewPicture` accepts Go's standard `image.Image` interface:
@@ -103,6 +141,18 @@ rosaline.Scroll(rosaline.Image(picture)).
 
 See [SCROLLING.md](SCROLLING.md) and the complete
 [IMAGE_VIEWER.md](IMAGE_VIEWER.md) tutorial.
+
+## Drawing pictures on a Canvas
+
+Custom drawing surfaces can draw pictures at natural size or fit them into a
+rectangle:
+
+```go
+canvas.Image(picture, 20, 20)
+canvas.ImageFit(picture, rosaline.Rect{
+	X: 20, Y: 80, Width: 320, Height: 180,
+})
+```
 
 ## Go concepts used here
 

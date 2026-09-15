@@ -92,6 +92,9 @@ func (t *TextAreaWidget) OnCursorMove(handler func(TextPosition)) *TextAreaWidge
 func (t *TextAreaWidget) Focus() *TextAreaWidget {
 	if t != nil {
 		t.focus = true
+		if t.area != nil {
+			tk.Focus(t.area.Window)
+		}
 	}
 	return t
 }

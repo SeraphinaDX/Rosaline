@@ -191,6 +191,26 @@ func (c *DrawingCanvas) Text(text string, x, y float64, style TextStyle) {
 	c.context.DrawStringAnchored(text, x, y, 0, 1)
 }
 
+// Image draws a picture at its natural pixel size from its top-left corner.
+func (c *DrawingCanvas) Image(picture *Picture, x, y float64) {
+	if c == nil || c.context == nil || picture == nil || picture.pixels == nil {
+		return
+	}
+	c.context.DrawImageAnchored(picture.pixels, int(math.Round(x)), int(math.Round(y)), 0, 0)
+}
+
+// ImageFit draws a picture centered inside bounds while preserving its aspect
+// ratio. Empty space inside bounds remains unchanged.
+func (c *DrawingCanvas) ImageFit(picture *Picture, bounds Rect) {
+	if c == nil || c.context == nil || picture == nil || picture.pixels == nil || bounds.Width <= 0 || bounds.Height <= 0 {
+		return
+	}
+	width := max(1, int(math.Round(bounds.Width)))
+	height := max(1, int(math.Round(bounds.Height)))
+	pixels := fitImage(picture.pixels, width, height)
+	c.context.DrawImageAnchored(pixels, int(math.Round(bounds.X)), int(math.Round(bounds.Y)), 0, 0)
+}
+
 var parsedDrawingFont, drawingFontError = opentype.Parse(goregular.TTF)
 
 func drawingFont(size int) font.Face {
