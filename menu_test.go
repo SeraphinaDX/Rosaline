@@ -12,3 +12,15 @@ func TestMenuConstruction(t *testing.T) {
 		t.Fatal("menu constructors did not preserve their options")
 	}
 }
+
+func TestContextMenuConstruction(t *testing.T) {
+	action := MenuItem("Delete", func() {})
+	canvas := Canvas(nil).ContextMenu(action, MenuSeparator(), nil)
+	tree := Tree(Node("Root")).ContextMenu(action, nil).OnKeyDown(func(KeyEvent) {})
+	if len(canvas.contextMenu) != 2 {
+		t.Fatalf("canvas context menu has %d entries", len(canvas.contextMenu))
+	}
+	if len(tree.contextMenu) != 1 || tree.onKeyDown == nil {
+		t.Fatal("tree editing callbacks were not retained")
+	}
+}

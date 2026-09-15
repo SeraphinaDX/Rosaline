@@ -2,6 +2,15 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.16.1
+
+- Add right-click context menus to `Canvas` and `Tree` widgets using the same
+  beginner-friendly menu commands as application menu bars.
+- Select the clicked tree node before its context menu opens so editor commands
+  naturally act on the item beneath the pointer.
+- Add `Tree.OnKeyDown` for focus-safe hierarchy commands such as deleting a
+  selected designer component without intercepting keys typed into text fields.
+
 ## 0.16.0
 
 - Add `LoadImageFS` so applications can load pictures from `embed.FS` and

@@ -191,6 +191,27 @@ and vertical scrollbars are automatic.
 - Enter activates the selected node.
 - Tab and Shift+Tab move to neighboring controls.
 
+Use `OnKeyDown` for application-specific tree commands without intercepting
+keys typed into unrelated text fields:
+
+```go
+tree.OnKeyDown(func(event rosaline.KeyEvent) {
+	if event.Is(rosaline.KeyDelete) {
+		deleteSelected()
+	}
+})
+```
+
+Trees also support right-click commands. The clicked node becomes selected
+before the chosen command runs:
+
+```go
+tree.ContextMenu(
+	rosaline.MenuItem("Open", openSelected),
+	rosaline.MenuItem("Delete", deleteSelected),
+)
+```
+
 ## Common mistakes
 
 - Keep node pointers if you need to select or update particular nodes later.
@@ -209,4 +230,3 @@ and vertical scrollbars are automatic.
 - slices and variadic arguments
 - callbacks and closures
 - multiple return values
-

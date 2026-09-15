@@ -112,6 +112,22 @@ to an already-open canvas. This is useful for games and other keyboard-driven
 tools. The complete [Starshower application](STARSHOWER_APPLICATION.md) shows
 held-key movement and firing.
 
+## Right-click commands
+
+Add a context menu with ordinary Rosaline menu entries:
+
+```go
+canvas.ContextMenu(
+	rosaline.MenuItem("Edit shape", editSelected),
+	rosaline.MenuSeparator(),
+	rosaline.MenuItem("Delete shape", deleteSelected),
+)
+```
+
+When the secondary mouse button is pressed, `OnMouseDown` runs before the menu
+opens. Editors can therefore select the item at `event.X` and `event.Y`, and
+the menu command will act on that newly selected item.
+
 ## Redrawing from another control
 
 Mouse callbacks redraw automatically. If a button or another Rosaline callback
