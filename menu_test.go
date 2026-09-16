@@ -6,11 +6,13 @@ import "testing"
 
 func TestMenuConstruction(t *testing.T) {
 	action := MenuItem("Open", nil).Shortcut("Ctrl+O")
-	menu := Menu("File", action, MenuSeparator(), nil)
+	recent := Menu("Recent", MenuItem("Notes", nil))
+	menu := Menu("File", action, recent, MenuSeparator(), nil)
 	bar := MenuBar(menu, nil)
-	if action.shortcut != "Ctrl+O" || len(menu.entries) != 2 || len(bar.menus) != 1 {
+	if action.shortcut != "Ctrl+O" || len(menu.entries) != 3 || len(recent.entries) != 1 || len(bar.menus) != 1 {
 		t.Fatal("menu constructors did not preserve their options")
 	}
+	var _ MenuEntry = recent
 }
 
 func TestContextMenuConstruction(t *testing.T) {

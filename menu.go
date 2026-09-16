@@ -13,13 +13,13 @@ type AppMenuBar struct {
 	menus []*AppMenu
 }
 
-// AppMenu is one named drop-down menu in a menu bar.
+// AppMenu is one named drop-down menu or nested submenu.
 type AppMenu struct {
 	text    string
 	entries []MenuEntry
 }
 
-// MenuEntry is an item or separator accepted by Menu.
+// MenuEntry is an item, separator, or submenu accepted by Menu.
 type MenuEntry interface {
 	add(*mountContext, *tk.MenuWidget, *tk.Window)
 }
@@ -44,7 +44,8 @@ func MenuBar(menus ...*AppMenu) *AppMenuBar {
 	return &AppMenuBar{menus: clean}
 }
 
-// Menu creates one named drop-down menu.
+// Menu creates one named drop-down menu. A Menu can also be passed to another
+// Menu to create a cascading submenu.
 func Menu(text string, entries ...MenuEntry) *AppMenu {
 	return &AppMenu{text: text, entries: cleanMenuEntries(entries)}
 }
@@ -72,13 +73,22 @@ func MenuSeparator() MenuEntry {
 func (m *AppMenuBar) mount(ctx *mountContext, window *tk.Window) {
 	menuBar := window.Menu(tk.Tearoff(false))
 	for _, appMenu := range m.menus {
-		dropdown := menuBar.Menu(tk.Tearoff(false))
-		for _, entry := range appMenu.entries {
-			entry.add(ctx, dropdown, window)
-		}
-		menuBar.AddCascade(tk.Lbl(appMenu.text), tk.Mnu(dropdown))
+		appMenu.add(ctx, menuBar, window)
 	}
 	window.Configure(tk.Mnu(menuBar))
+}
+
+// add also makes Menu usable as an entry inside another Menu, producing a
+// native cascading submenu with the same item and separator API.
+func (m *AppMenu) add(ctx *mountContext, menu *tk.MenuWidget, window *tk.Window) {
+	if m == nil {
+		return
+	}
+	dropdown := menu.Menu(tk.Tearoff(false))
+	for _, entry := range m.entries {
+		entry.add(ctx, dropdown, window)
+	}
+	menu.AddCascade(tk.Lbl(m.text), tk.Mnu(dropdown))
 }
 
 func (m *MenuAction) add(ctx *mountContext, menu *tk.MenuWidget, window *tk.Window) {

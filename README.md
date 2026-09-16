@@ -474,7 +474,7 @@ Labels, buttons, checkboxes, and text boxes expose small direct-control
 methods alongside Rosaline's ordinary Go-value bindings. See
 [Changing Controls at Runtime](docs/COMPONENT_CONTROL.md).
 
-## Included in v0.18.0
+## Included in v0.19.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -519,6 +519,7 @@ methods alongside Rosaline's ordinary Go-value bindings. See
 - Horizontal and vertical scroll areas
 - Native open, save, message, error, and confirmation dialogs
 - Menu bars with working keyboard shortcuts
+- Native cascading submenus built from the same `Menu` function
 - Repeating and one-shot application timers
 - Start, stop, restart, and running-state timer controls
 - Frame-rate-based canvas animation
