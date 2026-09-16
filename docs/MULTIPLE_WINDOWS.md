@@ -88,6 +88,19 @@ The Go handle, application variables, and widget descriptions remain. A later
 `Show` remounts them in a new native window. Calling `Close` more than once is
 safe.
 
+Use `OnOpen` for work that should happen after the controls are mounted. It
+runs each time a reusable secondary window opens, but not when `Show` merely
+focuses a window that is already open:
+
+```go
+settingsWindow := rosaline.NewWindow(rosaline.WindowOptions{
+	OnOpen: func() {
+		status = "Settings opened"
+	},
+	Content: settingsContent,
+})
+```
+
 Use `OnClose` when other application state should change regardless of whether
 the user pressed a Close button or the window manager's close control:
 
@@ -172,6 +185,23 @@ editor.SetTitle("Editor — Unsaved")
 ```
 
 An empty title uses `Rosaline`.
+
+The primary `App` accepts the same lifecycle callbacks:
+
+```go
+rosaline.RunApp(rosaline.App{
+	OnOpen: func() {
+		status = "Application ready"
+	},
+	OnClose: func() {
+		fmt.Println("Application closed")
+	},
+	Content: content,
+})
+```
+
+`App.OnOpen` runs after the primary controls are mounted. `App.OnClose` runs
+after the event loop has ended and the primary window has been cleaned up.
 
 ## Window-specific menus, themes, timers, and tasks
 

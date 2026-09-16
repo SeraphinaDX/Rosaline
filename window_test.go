@@ -35,6 +35,7 @@ func TestWindowShowFocusCloseAndReopen(t *testing.T) {
 	focuses := 0
 	titles := 0
 	closedCallbacks := 0
+	openedCallbacks := 0
 	showWindowBackend = func(*Window) { shows++ }
 	closeWindowBackend = func(*Window) { closes++ }
 	focusWindowBackend = func(*Window) { focuses++ }
@@ -45,18 +46,21 @@ func TestWindowShowFocusCloseAndReopen(t *testing.T) {
 		titles++
 	}
 
-	window := NewWindow(WindowOptions{OnClose: func() { closedCallbacks++ }})
+	window := NewWindow(WindowOptions{
+		OnOpen:  func() { openedCallbacks++ },
+		OnClose: func() { closedCallbacks++ },
+	})
 	window.Show()
-	if !window.IsOpen() || shows != 1 {
-		t.Fatalf("first Show = open %v, backend calls %d", window.IsOpen(), shows)
+	if !window.IsOpen() || shows != 1 || openedCallbacks != 1 {
+		t.Fatalf("first Show = open %v, backend calls %d, open callbacks %d", window.IsOpen(), shows, openedCallbacks)
 	}
 	if _, ok := session.windows[window]; !ok {
 		t.Fatal("open window was not registered with its application")
 	}
 
 	window.Show()
-	if shows != 1 || focuses != 1 {
-		t.Fatalf("second Show = %d creates, %d focuses; want 1, 1", shows, focuses)
+	if shows != 1 || focuses != 1 || openedCallbacks != 1 {
+		t.Fatalf("second Show = %d creates, %d focuses, %d open callbacks; want 1, 1, 1", shows, focuses, openedCallbacks)
 	}
 	window.SetTitle("Renamed")
 	if titles != 1 || window.options.Title != "Renamed" {
@@ -73,8 +77,8 @@ func TestWindowShowFocusCloseAndReopen(t *testing.T) {
 	}
 
 	window.Show()
-	if !window.IsOpen() || shows != 2 {
-		t.Fatalf("reopened window = open %v, backend calls %d", window.IsOpen(), shows)
+	if !window.IsOpen() || shows != 2 || openedCallbacks != 2 {
+		t.Fatalf("reopened window = open %v, backend calls %d, open callbacks %d", window.IsOpen(), shows, openedCallbacks)
 	}
 }
 

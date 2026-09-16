@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.15.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.18.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -357,6 +357,11 @@ share normal Go state, own menus and timers, and form safe parent-child
 relationships. See [docs/MULTIPLE_WINDOWS.md](docs/MULTIPLE_WINDOWS.md) and the
 complete [Project Desk example](examples/windows/main.go).
 
+Primary and secondary windows also have lifecycle callbacks. `OnOpen` runs
+after controls are mounted, `OnCloseRequest` can cancel a direct close, and
+`OnClose` observes the completed close. A reusable secondary window receives
+`OnOpen` again each time it is reopened.
+
 ## Everyday controls with ordinary Go values
 
 Radio groups, combo boxes, sliders, and progress bars bind directly to normal
@@ -469,7 +474,7 @@ Labels, buttons, checkboxes, and text boxes expose small direct-control
 methods alongside Rosaline's ordinary Go-value bindings. See
 [Changing Controls at Runtime](docs/COMPONENT_CONTROL.md).
 
-## Included in v0.17.0
+## Included in v0.18.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -538,6 +543,7 @@ methods alongside Rosaline's ordinary Go-value bindings. See
 - Parent-child window lifecycles, automatic parent opening, cascading closure,
   and duplicate prevention
 - Cancellable close requests for protecting unsaved window content
+- Primary and secondary `OnOpen` callbacks plus primary `OnClose`
 - Automatic dynamic-widget refresh across every open window
 - Semantic colors and themes
 - A saveable Paint application with menus, shortcuts, and PNG/AVIF output
