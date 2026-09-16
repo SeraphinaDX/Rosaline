@@ -452,11 +452,30 @@ risking a document when saving is cancelled or fails. See
 [Text Editing](docs/TEXT_EDITING.md) and the complete
 [Notepad application](docs/NOTEPAD_APPLICATION.md).
 
-## Included in v0.16.1
+## Change controls from events
+
+Keep a control in a variable when one event needs to update another control:
+
+```go
+status := rosaline.Label("Ready")
+save := rosaline.Button("Save", nil)
+save.OnClick(func() {
+	status.SetText("Saved")
+	save.SetEnabled(false)
+})
+```
+
+Labels, buttons, checkboxes, and text boxes expose small direct-control
+methods alongside Rosaline's ordinary Go-value bindings. See
+[Changing Controls at Runtime](docs/COMPONENT_CONTROL.md).
+
+## Included in v0.17.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
 - Buttons and message dialogs
+- Runtime text, checked-state, focus, and enabled-state control for common
+  form components
 - Rows, columns, spacing, padding, and expansion
 - Equal-column grids with automatic rows, gaps, padding, and expansion
 - Layered stacks with metadata-driven alignment and centered overlays

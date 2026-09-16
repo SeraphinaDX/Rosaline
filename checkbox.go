@@ -14,6 +14,10 @@ type CheckBoxWidget struct {
 	value    *bool
 	onChange func(bool)
 	focus    bool
+	enabled  bool
+	variable *tk.VariableOpt
+	checkBox *tk.CheckbuttonWidget
+	ctx      *mountContext
 }
 
 // CheckBox creates a checkbox. It updates value when the user toggles it.
@@ -22,8 +26,64 @@ func CheckBox(text string, value *bool) *CheckBoxWidget {
 	if value == nil {
 		value = new(bool)
 	}
-	return &CheckBoxWidget{text: text, value: value}
+	return &CheckBoxWidget{text: text, value: value, enabled: true}
 }
+
+// Checked reports the current bound value.
+func (c *CheckBoxWidget) Checked() bool {
+	return c != nil && c.value != nil && *c.value
+}
+
+// SetChecked changes the value. When mounted, OnChange runs for a change.
+func (c *CheckBoxWidget) SetChecked(checked bool) {
+	if c == nil || c.value == nil {
+		return
+	}
+	old := *c.value
+	*c.value = checked
+	if c.variable != nil {
+		c.variable.Set(checked)
+		if old != checked && c.onChange != nil {
+			c.onChange(checked)
+		}
+		if c.ctx != nil {
+			c.ctx.refresh()
+		}
+	}
+}
+
+// SetText replaces the checkbox label immediately.
+func (c *CheckBoxWidget) SetText(text string) {
+	if c == nil {
+		return
+	}
+	c.text = text
+	if c.checkBox != nil {
+		c.checkBox.Configure(tk.Txt(text))
+	}
+}
+
+// Text returns the current checkbox label.
+func (c *CheckBoxWidget) Text() string {
+	if c == nil {
+		return ""
+	}
+	return c.text
+}
+
+// SetEnabled enables or disables the checkbox immediately.
+func (c *CheckBoxWidget) SetEnabled(enabled bool) {
+	if c == nil {
+		return
+	}
+	c.enabled = enabled
+	if c.checkBox != nil {
+		c.checkBox.Configure(tk.State(enabledState(enabled)))
+	}
+}
+
+// Enabled reports whether the checkbox can currently be toggled.
+func (c *CheckBoxWidget) Enabled() bool { return c != nil && c.enabled }
 
 // OnChange runs after the user toggles the checkbox.
 func (c *CheckBoxWidget) OnChange(handler func(bool)) *CheckBoxWidget {
@@ -40,6 +100,8 @@ func (c *CheckBoxWidget) Focus() *CheckBoxWidget {
 
 func (c *CheckBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget {
 	variable := tk.Variable(*c.value)
+	c.variable = variable
+	c.ctx = ctx
 	lastValue := *c.value
 	var checkBox *tk.CheckbuttonWidget
 
@@ -72,7 +134,14 @@ func (c *CheckBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		tk.Highlightbackground(ctx.theme.Background.String()),
 		takeFocusOption(true),
 		tk.Anchor("w"),
+		tk.State(enabledState(c.enabled)),
 	)
+	c.checkBox = checkBox
+	ctx.addCleanup(func() {
+		c.variable = nil
+		c.checkBox = nil
+		c.ctx = nil
+	})
 
 	ctx.flushes = append(ctx.flushes, syncValue)
 	ctx.refreshes = append(ctx.refreshes, func() {

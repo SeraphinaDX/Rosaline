@@ -13,6 +13,10 @@ type TextBoxWidget struct {
 	onChange    func(string)
 	onSubmit    func(string)
 	focus       bool
+	enabled     bool
+	lastValue   string
+	entry       *tk.EntryWidget
+	ctx         *mountContext
 }
 
 // TextBox creates a single-line input. The box updates value as the user types.
@@ -21,8 +25,49 @@ func TextBox(value *string) *TextBoxWidget {
 	if value == nil {
 		value = new(string)
 	}
-	return &TextBoxWidget{value: value, columns: 28}
+	return &TextBoxWidget{value: value, columns: 28, enabled: true, lastValue: *value}
 }
+
+// Text returns the current bound text.
+func (t *TextBoxWidget) Text() string {
+	if t == nil || t.value == nil {
+		return ""
+	}
+	return *t.value
+}
+
+// SetText replaces the text. When mounted, OnChange runs for a changed value.
+func (t *TextBoxWidget) SetText(text string) {
+	if t == nil || t.value == nil {
+		return
+	}
+	old := *t.value
+	*t.value = text
+	t.lastValue = text
+	if t.entry != nil {
+		t.entry.Configure(tk.Textvariable(text))
+		if old != text && t.onChange != nil {
+			t.onChange(text)
+		}
+		if t.ctx != nil {
+			t.ctx.refresh()
+		}
+	}
+}
+
+// SetEnabled enables or disables text editing immediately.
+func (t *TextBoxWidget) SetEnabled(enabled bool) {
+	if t == nil {
+		return
+	}
+	t.enabled = enabled
+	if t.entry != nil {
+		t.entry.Configure(tk.State(enabledState(enabled)))
+	}
+}
+
+// Enabled reports whether the text box currently accepts input.
+func (t *TextBoxWidget) Enabled() bool { return t != nil && t.enabled }
 
 // Placeholder shows a hint while the text box is empty.
 func (t *TextBoxWidget) Placeholder(text string) *TextBoxWidget {
@@ -61,6 +106,9 @@ func (t *TextBoxWidget) OnSubmit(handler func(string)) *TextBoxWidget {
 // If several widgets request focus, the first one wins.
 func (t *TextBoxWidget) Focus() *TextBoxWidget {
 	t.focus = true
+	if t.entry != nil {
+		tk.Focus(t.entry.Window)
+	}
 	return t
 }
 
@@ -77,6 +125,7 @@ func (t *TextBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidge
 		tk.Highlightthickness(1),
 		tk.Highlightbackground(ctx.theme.Border.String()),
 		tk.Highlightcolor(ctx.theme.Primary.String()),
+		tk.State(enabledState(t.enabled)),
 		takeFocusOption(true),
 	}
 	if t.placeholder != "" {
@@ -90,12 +139,18 @@ func (t *TextBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidge
 	}
 
 	entry := parent.Entry(options...)
-	lastValue := *t.value
+	t.entry = entry
+	t.ctx = ctx
+	t.lastValue = *t.value
+	ctx.addCleanup(func() {
+		t.entry = nil
+		t.ctx = nil
+	})
 	syncValue := func() {
 		current := entry.Textvariable()
 		*t.value = current
-		if current != lastValue {
-			lastValue = current
+		if current != t.lastValue {
+			t.lastValue = current
 			if t.onChange != nil {
 				t.onChange(current)
 			}
@@ -121,7 +176,7 @@ func (t *TextBoxWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidge
 	ctx.refreshes = append(ctx.refreshes, func() {
 		if entry.Textvariable() != *t.value {
 			entry.Configure(tk.Textvariable(*t.value))
-			lastValue = *t.value
+			t.lastValue = *t.value
 		}
 	})
 	ctx.addFocusable(entry.Window, t.focus)
