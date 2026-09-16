@@ -2,6 +2,16 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.18.0
+
+- Add `OnOpen` lifecycle callbacks to primary and secondary windows. The
+  callback runs after the window and its controls are mounted, including every
+  time a reusable secondary window is reopened.
+- Add `OnClose` to `App` so primary forms can respond after the application
+  window closes, matching the existing secondary-window lifecycle.
+- Refresh all open windows after an `OnOpen` callback so state changes appear
+  immediately across a multi-window application.
+
 ## 0.17.0
 
 - Add runtime `Text` and `SetText` methods to labels, buttons, checkboxes, and

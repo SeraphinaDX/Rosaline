@@ -22,6 +22,8 @@ type WindowOptions struct {
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
+	// OnOpen runs after the window and its controls are mounted.
+	OnOpen func()
 	// OnCloseRequest runs before a direct close request. Return false to keep
 	// the window open. OnClose runs after the window has closed.
 	OnCloseRequest func() bool
@@ -120,7 +122,12 @@ func (w *Window) Show() *Window {
 	w.session = activeSession
 	w.open = true
 	w.session.windows[w] = struct{}{}
+	session := w.session
 	showWindowBackend(w)
+	if w.options.OnOpen != nil {
+		w.options.OnOpen()
+		session.refreshAll()
+	}
 	return w
 }
 

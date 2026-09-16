@@ -21,10 +21,14 @@ type App struct {
 	Shortcuts []KeyShortcut
 	OnKeyDown func(KeyEvent)
 	OnKeyUp   func(KeyEvent)
+	// OnOpen runs after the primary window and its controls are mounted.
+	OnOpen func()
 	// OnCloseRequest runs before the window closes. Return false to keep the
 	// application open, for example while a document has unsaved changes.
 	OnCloseRequest func() bool
-	Content        Widget
+	// OnClose runs after the primary window has closed.
+	OnClose func()
+	Content Widget
 }
 
 var activeContext *mountContext
@@ -34,15 +38,20 @@ func Run(content Widget) {
 	RunApp(App{Content: content})
 }
 
-// RunApp opens the primary application window and runs its event loop.
-func RunApp(app App) {
-	options := (&Window{options: WindowOptions{
+func appWindowOptions(app App) WindowOptions {
+	return WindowOptions{
 		Title: app.Title, Width: app.Width, Height: app.Height,
 		Padding: app.Padding, Theme: app.Theme, Menu: app.Menu,
 		Timers: app.Timers, Tasks: app.Tasks, Shortcuts: app.Shortcuts,
 		OnKeyDown: app.OnKeyDown, OnKeyUp: app.OnKeyUp,
-		OnCloseRequest: app.OnCloseRequest, Content: app.Content,
-	}}).resolvedOptions()
+		OnOpen: app.OnOpen, OnCloseRequest: app.OnCloseRequest,
+		OnClose: app.OnClose, Content: app.Content,
+	}
+}
+
+// RunApp opens the primary application window and runs its event loop.
+func RunApp(app App) {
+	options := (&Window{options: appWindowOptions(app)}).resolvedOptions()
 
 	session := &applicationSession{
 		main:    mainWindowHandle,
@@ -76,6 +85,9 @@ func RunApp(app App) {
 		mainWindowHandle.mountedTasks = nil
 		activeSession = nil
 		activeContext = nil
+		if options.OnClose != nil {
+			options.OnClose()
+		}
 	}()
 	tk.App.WmTitle(options.Title)
 	tk.WmGeometry(tk.App, fmt.Sprintf("%dx%d", options.Width, options.Height))
@@ -90,6 +102,10 @@ func RunApp(app App) {
 		timer.begin()
 	}
 	mountedTasks.begin()
+	if options.OnOpen != nil {
+		options.OnOpen()
+		session.refreshAll()
+	}
 	tk.App.Wait()
 }
 
