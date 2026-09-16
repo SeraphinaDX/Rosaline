@@ -2,6 +2,18 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.17.0
+
+- Add runtime `Text` and `SetText` methods to labels, buttons, checkboxes, and
+  single-line text boxes so generated event handlers can update controls.
+- Add fluent `Button.OnClick` assignment for visually constructed and
+  late-bound event handlers.
+- Add `SetEnabled` and `Enabled` to buttons, checkboxes, and text boxes.
+- Add `Checked` and `SetChecked` to checkboxes.
+- Make `TextBox.Focus` work both before and after the control is mounted.
+- Preserve beginner-friendly bound Go values while exposing direct component
+  control for visual application builders such as Rosaline Studio.
+
 ## 0.16.1
 
 - Add right-click context menus to `Canvas` and `Tree` widgets using the same

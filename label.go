@@ -27,6 +27,22 @@ func LabelFunc(text func() string) *LabelWidget {
 	return &LabelWidget{text: text}
 }
 
+// Text returns the label's current text.
+func (l *LabelWidget) Text() string {
+	if l == nil || l.text == nil {
+		return ""
+	}
+	return l.text()
+}
+
+// SetText replaces the label text. Mounted labels update after the current
+// Rosaline callback completes, just like LabelFunc values.
+func (l *LabelWidget) SetText(text string) {
+	if l != nil {
+		l.text = func() string { return text }
+	}
+}
+
 // Color sets this label's text color.
 func (l *LabelWidget) Color(color Color) *LabelWidget {
 	l.color = &color
@@ -79,7 +95,7 @@ func (l *LabelWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget 
 		color = *l.color
 	}
 	options := []tk.Opt{
-		tk.Txt(l.text()),
+		tk.Txt(l.Text()),
 		tk.Foreground(color.String()),
 		tk.Background(ctx.theme.Background.String()),
 		tk.Anchor(labelAnchor(l.alignment)),
@@ -99,7 +115,7 @@ func (l *LabelWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidget 
 	}
 	label := parent.Label(options...)
 	ctx.refreshes = append(ctx.refreshes, func() {
-		label.Configure(tk.Txt(l.text()))
+		label.Configure(tk.Txt(l.Text()))
 	})
 	return mountedWidget{window: label.Window}
 }
