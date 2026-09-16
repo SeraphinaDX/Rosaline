@@ -2,6 +2,13 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.19.0
+
+- Allow `Menu` values inside other menus to create native cascading submenus.
+- Keep nested menus on the existing small `MenuEntry` model so menu items,
+  separators, shortcuts, and shared callbacks work unchanged at every level.
+- Document nested menus for hand-written and visually generated applications.
+
 ## 0.18.0
 
 - Add `OnOpen` lifecycle callbacks to primary and secondary windows. The

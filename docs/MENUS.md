@@ -28,8 +28,25 @@ func main() {
 }
 ```
 
-`MenuBar` contains menus, and each `Menu` contains items or separators. Menu
-callbacks are ordinary `func()` values, just like button callbacks.
+`MenuBar` contains menus, and each `Menu` contains items, separators, or other
+menus. Menu callbacks are ordinary `func()` values, just like button callbacks.
+
+## Submenus
+
+Place one `Menu` inside another to create a cascading submenu:
+
+```go
+rosaline.Menu("File",
+	rosaline.MenuItem("Open…", openFile),
+	rosaline.Menu("Open Recent",
+		rosaline.MenuItem("Notes.txt", openNotes),
+		rosaline.MenuItem("Ideas.txt", openIdeas),
+	),
+)
+```
+
+Submenus can contain more submenus when an application genuinely needs them.
+For a beginner-friendly interface, prefer a shallow menu structure.
 
 ## Shortcuts
 
