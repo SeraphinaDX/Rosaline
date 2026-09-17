@@ -28,6 +28,9 @@ type TextAreaWidget struct {
 	onCursorMove func(TextPosition)
 	focus        bool
 	expand       bool
+	readOnly     bool
+	monospace    bool
+	goSyntax     bool
 	area         *tk.TextWidget
 	ctx          *mountContext
 	cursor       TextPosition
@@ -127,7 +130,7 @@ func (t *TextAreaWidget) SetText(text string) {
 
 // Append adds text at the end of the document.
 func (t *TextAreaWidget) Append(text string) {
-	if t == nil || t.value == nil || text == "" {
+	if t == nil || t.value == nil || text == "" || t.readOnly {
 		return
 	}
 	if t.area == nil {
@@ -141,7 +144,7 @@ func (t *TextAreaWidget) Append(text string) {
 
 // Clear removes all text. When mounted, the change can be undone.
 func (t *TextAreaWidget) Clear() {
-	if t == nil || t.value == nil || *t.value == "" {
+	if t == nil || t.value == nil || *t.value == "" || t.readOnly {
 		return
 	}
 	if t.area == nil {
@@ -176,17 +179,26 @@ func (t *TextAreaWidget) MarkSaved() {
 // Undo reverses the newest available edit. It safely does nothing when the
 // text area is not mounted or no undo operation is available.
 func (t *TextAreaWidget) Undo() {
+	if t == nil || t.readOnly {
+		return
+	}
 	t.performNativeEdit(func() { t.area.Undo() })
 }
 
 // Redo reapplies the newest available undone edit. It safely does nothing
 // when the text area is not mounted or no redo operation is available.
 func (t *TextAreaWidget) Redo() {
+	if t == nil || t.readOnly {
+		return
+	}
 	t.performNativeEdit(func() { t.area.Redo() })
 }
 
 // Cut copies the selected text to the platform clipboard and removes it.
 func (t *TextAreaWidget) Cut() {
+	if t == nil || t.readOnly {
+		return
+	}
 	t.performNativeEdit(func() { t.area.Cut() })
 }
 
@@ -199,6 +211,9 @@ func (t *TextAreaWidget) Copy() {
 
 // Paste inserts text from the platform clipboard at the cursor.
 func (t *TextAreaWidget) Paste() {
+	if t == nil || t.readOnly {
+		return
+	}
 	t.performNativeEdit(func() { t.area.Paste() })
 }
 
@@ -256,7 +271,7 @@ func (t *TextAreaWidget) FindNext(query string) bool {
 // ReplaceSelection replaces the selected text and reports whether a selection
 // existed. The replacement becomes one normal undoable edit.
 func (t *TextAreaWidget) ReplaceSelection(replacement string) bool {
-	if t == nil || t.area == nil {
+	if t == nil || t.area == nil || t.readOnly {
 		return false
 	}
 	selection := t.area.TagRanges("sel")
@@ -276,7 +291,7 @@ func (t *TextAreaWidget) ReplaceSelection(replacement string) bool {
 // ReplaceAll replaces every exact occurrence of old with replacement and
 // returns the number of replacements. An empty old value changes nothing.
 func (t *TextAreaWidget) ReplaceAll(old, replacement string) int {
-	if t == nil || t.value == nil || old == "" {
+	if t == nil || t.value == nil || old == "" || t.readOnly {
 		return 0
 	}
 	if t.area != nil {
@@ -303,10 +318,20 @@ func (t *TextAreaWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		tk.Borderwidth(0),
 	)
 	var scrollbar *tk.TScrollbarWidget
+	var horizontalScrollbar *tk.TScrollbarWidget
+	wrap := "word"
+	if t.goSyntax {
+		wrap = "none"
+	}
+	font := tk.Font(tk.FixedFont)
+	if !t.monospace {
+		font = tk.Font(tk.TextFont)
+	}
 	area := frame.Text(
 		tk.Width(t.columns),
 		tk.Height(t.lines),
-		tk.Wrap("word"),
+		tk.Wrap(wrap),
+		font,
 		tk.Undo(true),
 		tk.Autoseparators(true),
 		tk.Exportselection(0),
@@ -320,6 +345,7 @@ func (t *TextAreaWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		tk.Highlightbackground(ctx.theme.Border.String()),
 		tk.Highlightcolor(ctx.theme.Primary.String()),
 		tk.Yscrollcommand(func(event *tk.Event) { event.ScrollSet(scrollbar) }),
+		tk.Xscrollcommand(func(event *tk.Event) { event.ScrollSet(horizontalScrollbar) }),
 		takeFocusOption(true),
 	)
 	scrollbar = frame.TScrollbar(
@@ -327,7 +353,15 @@ func (t *TextAreaWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 		takeFocusOption(false),
 		tk.Command(func(event *tk.Event) { event.Yview(area) }),
 	)
+	horizontalScrollbar = frame.TScrollbar(
+		tk.Orient("horizontal"),
+		takeFocusOption(false),
+		tk.Command(func(event *tk.Event) { event.Xview(area) }),
+	)
 	tk.Pack(scrollbar, tk.Side("right"), tk.Fill("y"))
+	if t.goSyntax {
+		tk.Pack(horizontalScrollbar, tk.Side("bottom"), tk.Fill("x"))
+	}
 	tk.Pack(area, tk.Side("left"), tk.Fill("both"), tk.Expand(true))
 	t.area = area
 	t.ctx = ctx
@@ -337,9 +371,11 @@ func (t *TextAreaWidget) mount(ctx *mountContext, parent *tk.Window) mountedWidg
 	area.EditReset()
 	area.SetModified(false)
 	t.updateCursor(false)
+	t.applyEditorPresentation()
 
 	syncAndRefresh := func() {
 		t.syncFromNative(true)
+		t.applyEditorPresentation()
 		t.refresh()
 	}
 	tk.Bind(area.Window, "<KeyRelease>", tk.Command(syncAndRefresh))
@@ -366,12 +402,16 @@ func (t *TextAreaWidget) replaceNative(text string, resetUndo bool) {
 	if t == nil || t.area == nil {
 		return
 	}
+	if t.readOnly {
+		t.area.Configure(tk.State("normal"))
+	}
 	t.area.Replace("1.0", "end-1c", text)
 	if resetUndo {
 		t.area.EditReset()
 	}
 	t.area.SetModified(text != t.cleanValue)
 	t.updateCursor(true)
+	t.applyEditorPresentation()
 }
 
 func (t *TextAreaWidget) syncFromNative(notify bool) {

@@ -136,6 +136,40 @@ adds one when presenting the column to a person. `OnCursorMove` is available
 when an application needs a callback rather than querying the value in a
 `LabelFunc`.
 
+## Build a Go source editor
+
+`GoCodeEditor` keeps the normal `TextArea` API and adds a fixed-width font,
+horizontal scrolling, no line wrapping, and lightweight Go syntax coloring:
+
+```go
+source := "package main\n"
+editor := rosaline.GoCodeEditor(&source).Expand()
+```
+
+Compiler output can navigate directly to a one-based line and zero-based
+column:
+
+```go
+editor.GoTo(12, 4)
+```
+
+Use read-only mode for generated files. The user can still select, copy, and
+scroll the source:
+
+```go
+editor.SetReadOnly(true)
+editor.SetText(generatedSource)
+
+if editor.IsReadOnly() {
+	status = "Generated file - read only"
+}
+```
+
+Call `SetReadOnly(false)` when switching back to a developer-owned document.
+`SetGoSyntax(false)` disables coloring when the same editor displays ordinary
+text. `Monospace` is also available independently for logs and fixed-column
+data.
+
 ## Protect unsaved work
 
 `OnCloseRequest` runs before either a menu command or the window's close button
