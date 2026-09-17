@@ -2,6 +2,17 @@
 
 Rosaline follows semantic versioning while its public API develops toward 1.0.
 
+## 0.20.0
+
+- Add `GoCodeEditor` for fixed-width, non-wrapping Go source editing with
+  lightweight keyword, string, comment, number, and predeclared-name coloring.
+- Add `TextArea.Monospace`, `SetGoSyntax`, `ReadOnly`, `SetReadOnly`, and
+  `IsReadOnly` for source viewers, generated-file previews, and IDE tooling.
+- Add `TextArea.GoTo` for compiler-error and search-result navigation by line
+  and column.
+- Keep programmatic `SetText`, selection, copying, scrolling, and syntax
+  coloring available while an editor is read-only.
+
 ## 0.19.0
 
 - Allow `Menu` values inside other menus to create native cascading submenus.

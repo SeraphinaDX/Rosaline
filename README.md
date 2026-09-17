@@ -4,7 +4,7 @@ Rosaline is a small, beginner-friendly graphics and GUI library for Go. It is
 designed for people who know a little Go and want to make a real graphical
 program without first learning a large framework.
 
-Rosaline is currently at `v0.18.0`. The public API is small on purpose and grows
+Rosaline is currently at `v0.20.0`. The public API is small on purpose and grows
 through well-documented, tested features.
 
 ## Goals
@@ -474,7 +474,28 @@ Labels, buttons, checkboxes, and text boxes expose small direct-control
 methods alongside Rosaline's ordinary Go-value bindings. See
 [Changing Controls at Runtime](docs/COMPONENT_CONTROL.md).
 
-## Included in v0.19.0
+## A Go source editor
+
+Developer tools can use Rosaline's small source-editing layer without bringing
+in a browser or a second GUI toolkit:
+
+```go
+var source = "package main\n"
+
+editor := rosaline.GoCodeEditor(&source).
+	Size(80, 28).
+	Expand()
+
+editor.GoTo(12, 4)
+editor.SetReadOnly(true)
+```
+
+`GoCodeEditor` provides a fixed-width font, horizontal scrolling, lightweight
+Go syntax coloring, saved-state tracking, and exact line navigation. The same
+`TextArea` can also become a general source viewer with `Monospace`,
+`SetGoSyntax`, and `ReadOnly`. See [Text Editing](docs/TEXT_EDITING.md).
+
+## Included in v0.20.0
 
 - Application windows
 - Labels and dynamic labels with font size, bold, and text alignment
@@ -492,6 +513,8 @@ methods alongside Rosaline's ordinary Go-value bindings. See
 - Password display, placeholders, change events, and Enter submission
 - Text-area content methods, saved-state tracking, undo/redo, clipboard
   commands, selection, exact find/replace, and cursor position
+- Fixed-width Go source editing, lightweight syntax coloring, read-only source
+  views, and compiler-style line navigation
 - Checkboxes bound to Go Boolean variables
 - Radio groups with separate labels and values, vertical or horizontal layout,
   callbacks, programmatic selection, and dynamic choices
